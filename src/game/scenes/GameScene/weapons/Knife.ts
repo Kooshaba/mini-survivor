@@ -32,34 +32,41 @@ export class Knife extends Weapon {
       ((this.count - 1) * (Math.PI / 20)) / 2;
 
     for (let i = 0; i < this.count; i++) {
-      const knife = this.scene.physics.add.sprite(
-        this.scene.player.x,
-        this.scene.player.y,
-        "knife"
-      );
-      knife.body.setCircle(5);
-      knife.setData("damage", this.damage);
-      knife.setData("pierce", this.pierce);
-      knife.setData("fromWeapon", this);
-      knife.setData("alreadyHit", []);
-
-      const angle = baseAngle + i * (Math.PI / 20);
-      knife.setRotation(angle + Math.PI / 2);
-      const direction = new Phaser.Math.Vector2(
-        Math.cos(angle),
-        Math.sin(angle)
-      );
-      knife.setVelocity(direction.x * this.speed, direction.y * this.speed);
-
-      this.scene.time.delayedCall(5000, () => {
-        knife.destroy();
+      this.createProjectile(baseAngle, i);
+      this.scene.time.delayedCall(100, () => {
+        this.createProjectile(baseAngle, i);
       });
-      this.scene.projectiles.add(knife);
     }
   }
 
+  createProjectile(baseAngle: number, index: number) {
+    const knife = this.scene.physics.add.sprite(
+      this.scene.player.x,
+      this.scene.player.y,
+      "knife"
+    );
+    knife.body.setCircle(5);
+    knife.setData("damage", this.damage);
+    knife.setData("pierce", this.pierce);
+    knife.setData("fromWeapon", this);
+    knife.setData("alreadyHit", []);
+
+    const angle = baseAngle + index * (Math.PI / 20);
+    knife.setRotation(angle + Math.PI / 2);
+    const direction = new Phaser.Math.Vector2(Math.cos(angle), Math.sin(angle));
+    knife.setVelocity(direction.x * this.speed, direction.y * this.speed);
+
+    this.scene.time.delayedCall(5000, () => {
+      knife.destroy();
+    });
+    this.scene.projectiles.add(knife);
+  }
+
   onHit(projectile: Phaser.GameObjects.Sprite, enemy: Enemy) {
-    (enemy as Enemy).takeDamage(projectile.getData("damage"));
+    (enemy as Enemy).takeDamage(
+      projectile.getData("damage"),
+      projectile.getCenter()
+    );
     const pierce = projectile.getData("pierce");
     if (pierce > 0) {
       projectile.setData("pierce", pierce - 1);
