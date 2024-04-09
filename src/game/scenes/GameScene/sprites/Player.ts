@@ -76,7 +76,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.health -= damage;
     this.immune = true;
-    this.scene.time.delayedCall(1000, () => {
+    this.scene.time.delayedCall(300, () => {
       this.immune = false;
     });
     this.drawHealthBar();
