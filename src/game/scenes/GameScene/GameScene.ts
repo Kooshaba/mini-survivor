@@ -47,11 +47,8 @@ export class Game extends Scene {
       },
       (p, enemy) => {
         const enemyIds = (p as GameObjects.Sprite).getData("alreadyHit");
-        console.log(enemyIds);
         const hitEnemyId = (enemy as GameObjects.Sprite).getData("id");
-        console.log(hitEnemyId);
         const stop = enemyIds?.includes(hitEnemyId);
-        console.log(stop);
         return !stop;
       }
     );
