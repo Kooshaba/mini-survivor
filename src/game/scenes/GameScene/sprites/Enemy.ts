@@ -16,6 +16,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
   healthBar: Phaser.GameObjects.Graphics;
 
+  glowSprite: Phaser.GameObjects.Sprite | null = null;
+
   constructor(scene: Game, x: number, y: number) {
     super(scene, x, y, "skeleton-idle");
     scene.add.existing(this);
@@ -30,7 +32,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     return Math.random().toString(36).substring(2, 15);
   }
 
-  takeDamage(damage: number) {
+  takeDamage(damage: number, originPosition: Phaser.Math.Vector2) {
     this.speed = 20;
     this.scene.tweens.add({
       targets: this,
@@ -57,17 +59,58 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     });
 
     this.health -= damage;
-    this.scene.tweens.add({
-      targets: this,
-      tint: 0xff0000,
-      duration: 100,
-      onComplete: () => {
-        this.setTint(this.baseTint);
-        if (this.health <= 0) {
-          this.onDeath();
-        }
-      },
-    });
+    if (this.health <= 0) {
+      this.health = 0;
+    }
+
+    if (!this.glowSprite) {
+      this.setDirectControl(true);
+      const knockbackAngle = Phaser.Math.Angle.BetweenPoints(
+        originPosition,
+        this
+      );
+      this.scene.tweens.add({
+        targets: this,
+        duration: 200,
+        x: this.x + Math.cos(knockbackAngle) * 5,
+        y: this.y + Math.sin(knockbackAngle) * 5,
+        onComplete: () => {
+          if (this) {
+            this.setDirectControl(false);
+          }
+        },
+      });
+
+      this.glowSprite = this.scene.add.sprite(this.x, this.y, "");
+      const currentAnim = this.anims.currentAnim;
+      if (currentAnim) {
+        this.glowSprite.play(currentAnim.key);
+        this.glowSprite.anims.setCurrentFrame(currentAnim.frames[0]);
+        this.glowSprite.stop();
+        this.glowSprite.setTintFill(0xffffff);
+        this.glowSprite.setScale(this.scale);
+        this.glowSprite.setAlpha(0.75);
+        this.glowSprite.setDepth(RenderDepth.PROJECTILE);
+        this.glowSprite.setOrigin(this.originX, this.originY);
+        this.scene.add.tween({
+          targets: this.glowSprite,
+          alpha: 0,
+          duration: 75,
+          yoyo: true,
+          repeat: 1,
+          onUpdate: () => {
+            this.glowSprite?.setPosition(this.x, this.y);
+          },
+          onComplete: () => {
+            this.glowSprite?.destroy();
+            this.glowSprite = null;
+            if (this.health <= 0) {
+              this.onDeath();
+            }
+          },
+        });
+      }
+    }
   }
 
   onDeath() {
