@@ -1,0 +1,124 @@
+import { Game } from "..";
+import { Enemy } from "../sprites/Enemy";
+import { RenderDepth } from "../types";
+import { Weapon } from "./Weapon";
+
+export class Axe extends Weapon {
+  weaponRotation = 0;
+  rotationSpeed = 0.04;
+
+  axes: Phaser.Physics.Arcade.Sprite[] = [];
+
+  constructor(scene: Game) {
+    super(scene);
+    this.damage = 20;
+    this.possibleUpgrades = [];
+
+    this.id = "axe";
+    this.knockback = 25;
+    this.possibleUpgrades = [
+      this.damageUpgrade(),
+      this.knockbackUpgrade(),
+      this.speedUpgrade(),
+      this.additionAxeUpgrade(),
+    ];
+
+    this.createProjectile();
+  }
+
+  createProjectile() {
+    const axe = this.scene.physics.add.sprite(
+      this.scene.player.x,
+      this.scene.player.y,
+      "axe"
+    );
+
+    axe.setScale(2);
+    axe.setDepth(RenderDepth.PROJECTILE);
+    axe.body.setCircle(8);
+    axe.body.setOffset(0, 6);
+    axe.setData("hitEnemies", []);
+    axe.setData("fromWeapon", this);
+    this.axes.push(axe);
+    this.scene.projectiles.add(axe);
+  }
+
+  update() {
+    this.weaponRotation += this.rotationSpeed;
+
+    const angle = this.weaponRotation;
+    for (let i = 0; i < this.axes.length; i++) {
+      const axe = this.axes[i];
+      const offset = i * ((Math.PI * 2) / 3);
+      axe.setRotation(angle + offset + Math.PI / 2);
+      axe.setPosition(
+        this.scene.player.x + Math.cos(angle + offset) * 40,
+        this.scene.player.y + Math.sin(angle + offset) * 40
+      );
+    }
+  }
+
+  onProjectileHit(p: Phaser.Physics.Arcade.Sprite, enemy: Enemy) {
+    const hitEnemies = p.getData("hitEnemies") as Enemy[];
+
+    if (hitEnemies.find((e) => e === enemy.getData("id"))) return;
+    hitEnemies.push(enemy.getData("id"));
+    p.setData("hitEnemies", hitEnemies);
+    this.scene.time.delayedCall(250, () => {
+      const hitEnemies = p.getData("hitEnemies") as Enemy[];
+      const index = hitEnemies.findIndex((e) => e === enemy.getData("id"));
+      hitEnemies.splice(index, 1);
+      p.setData("hitEnemies", hitEnemies);
+    });
+
+    enemy.takeDamage(
+      this.damage,
+      this.scene.player.getCenter(),
+      this.knockback
+    );
+  }
+
+  damageUpgrade() {
+    return {
+      name: "Axe: Damage",
+      description: "Increase damage by 5",
+      execute: () => {
+        this.damage += 5;
+      },
+    };
+  }
+
+  knockbackUpgrade() {
+    return {
+      name: "Axe: Knockback",
+      description: "Increase knockback by 10",
+      execute: () => {
+        this.knockback += 10;
+      },
+      canAppear: () => this.knockback < 100,
+    };
+  }
+
+  speedUpgrade() {
+    return {
+      name: "Axe: Speed",
+      description: "Increase speed by 10",
+      execute: () => {
+        this.rotationSpeed += 0.01;
+      },
+      canAppear: () => this.rotationSpeed < 0.1,
+    };
+  }
+
+  additionAxeUpgrade() {
+    return {
+      name: "Axe: Additional Axe",
+      description: "Add an additional axe",
+      execute: () => {
+        this.createProjectile();
+      },
+      canAppear: () => this.axes.length < 3,
+    };
+  }
+}
+

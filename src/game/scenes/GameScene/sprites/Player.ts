@@ -35,6 +35,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     scene.physics.add.existing(this);
     this.play("wizard-idle");
     this.body.setCircle(10);
+    this.body.setOffset(6, 10);
     this.setDepth(RenderDepth.PLAYER);
 
     this.drawHealthBar();
@@ -105,7 +106,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.scene.scene.pause();
 
-    const possibleUpgrades = this.weapons.map((w) => w.possibleUpgrades).flat();
+    const possibleUpgrades = this.weapons
+      .map((w) => w.possibleUpgrades)
+      .flat()
+      .filter((u) => u.canAppear?.());
     possibleUpgrades.push(...this.possibleUpgrades);
     const upgradeChoices = Phaser.Math.RND.shuffle(possibleUpgrades).slice(
       0,
@@ -128,6 +132,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
   update(): void {
     this.move();
+    this.weapons.map((w) => w.update());
   }
 
   move() {
@@ -135,10 +140,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     // Move the player left or right
     if (this.scene.input.keyboard.addKey("A").isDown) {
-      this.body.setVelocityX(-1 * this.moveSpeed);
+      this.body.setVelocityX(-1);
       this.setFlipX(true);
     } else if (this.scene.input.keyboard.addKey("D").isDown) {
-      this.body.setVelocityX(this.moveSpeed);
+      this.body.setVelocityX(1);
       this.setFlipX(false);
     } else {
       this.body.setVelocityX(0);
@@ -146,12 +151,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     // Move the player up or down
     if (this.scene.input.keyboard.addKey("W").isDown) {
-      this.body.setVelocityY(-1 * this.moveSpeed);
+      this.body.setVelocityY(-1);
     } else if (this.scene.input.keyboard.addKey("S").isDown) {
-      this.body.setVelocityY(this.moveSpeed);
+      this.body.setVelocityY(1);
     } else {
       this.body.setVelocityY(0);
     }
+
+    this.body.velocity.normalize().scale(this.moveSpeed);
 
     if (this.body.velocity.length() > 0) {
       this.lastDirection = this.body.velocity.clone().normalize();

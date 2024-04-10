@@ -6,8 +6,9 @@ import { ExperienceOrb } from "./sprites/ExperienceOrb";
 import { Player } from "./sprites/Player";
 import { FastBoy } from "./sprites/FastBoy";
 import { StrongBoy } from "./sprites/StrongBoy";
-import { Knife } from "./weapons/Knife";
 import { RenderDepth } from "./types";
+import { Axe } from "./weapons/Axe";
+import { Knife } from "./weapons/Knife";
 
 export class Game extends Scene {
   title: GameObjects.Text;
@@ -15,6 +16,7 @@ export class Game extends Scene {
 
   enemies: Phaser.GameObjects.Group;
   projectiles: Phaser.GameObjects.Group;
+  weapons: Phaser.GameObjects.Group;
   experienceOrbs: Phaser.GameObjects.Group;
 
   experienceBar: GameObjects.Graphics;
@@ -28,9 +30,11 @@ export class Game extends Scene {
     this.enemies = this.add.group();
     this.projectiles = this.add.group();
     this.experienceOrbs = this.add.group();
+    this.weapons = this.add.group();
 
     this.player = new Player(this, 512, 384);
     new Knife(this).equip();
+    new Axe(this).equip();
 
     this.physics.add.collider(this.player, this.enemies, (_p, _e) => {
       const player = _p as Player;
@@ -43,7 +47,9 @@ export class Game extends Scene {
       this.projectiles,
       this.enemies,
       (p, enemy) => {
-        (p as GameObjects.Sprite).getData("fromWeapon").onHit(p, enemy);
+        (p as GameObjects.Sprite)
+          .getData("fromWeapon")
+          .onProjectileHit(p, enemy);
       },
       (p, enemy) => {
         const enemyIds = (p as GameObjects.Sprite).getData("alreadyHit");
@@ -80,7 +86,7 @@ export class Game extends Scene {
 
     this.enemies.add(enemy);
     this.time.delayedCall(
-      1000 - this.player.level * 5,
+      Math.max(600 - this.player.level * 10, 150),
       this.spawnEnemy,
       [],
       this

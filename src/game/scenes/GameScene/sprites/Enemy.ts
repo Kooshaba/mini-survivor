@@ -26,13 +26,18 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.body.setCircle(10);
     this.setData("id", this.generateId());
     this.setDepth(RenderDepth.ENEMY);
+    this.body.setOffset(6, 10);
   }
 
   generateId() {
     return Math.random().toString(36).substring(2, 15);
   }
 
-  takeDamage(damage: number, originPosition: Phaser.Math.Vector2) {
+  takeDamage(
+    damage: number,
+    originPosition: Phaser.Math.Vector2,
+    knockback: number
+  ) {
     this.speed = 20;
     this.scene.tweens.add({
       targets: this,
@@ -72,8 +77,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
       this.scene.tweens.add({
         targets: this,
         duration: 200,
-        x: this.x + Math.cos(knockbackAngle) * 5,
-        y: this.y + Math.sin(knockbackAngle) * 5,
+        x: this.x + Math.cos(knockbackAngle) * knockback,
+        y: this.y + Math.sin(knockbackAngle) * knockback,
         onComplete: () => {
           if (this) {
             this.setDirectControl(false);

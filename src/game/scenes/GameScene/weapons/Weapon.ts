@@ -5,6 +5,7 @@ export type Upgrade = {
   name: string;
   description: string;
   execute: () => void;
+  canAppear?: () => boolean;
 };
 
 export class Weapon extends Phaser.Physics.Arcade.Sprite {
@@ -15,6 +16,7 @@ export class Weapon extends Phaser.Physics.Arcade.Sprite {
   damage: number = 1;
   timer: Phaser.Time.TimerEvent;
   fireRate: number = 1000;
+  knockback: number = 5;
 
   possibleUpgrades: Upgrade[] = [];
 
@@ -45,6 +47,6 @@ export class Weapon extends Phaser.Physics.Arcade.Sprite {
   update() {}
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onHit(_p: Phaser.GameObjects.Sprite, _enemy: Enemy) {}
+  onProjectileHit(_p: Phaser.GameObjects.Sprite, _enemy: Enemy) {}
 }
 

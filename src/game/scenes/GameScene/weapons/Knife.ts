@@ -18,6 +18,7 @@ export class Knife extends Weapon {
       this.fireRateUpgrade(),
       this.pierceUpgrade(),
     ];
+    this.id = "knife";
   }
 
   fire() {
@@ -46,6 +47,7 @@ export class Knife extends Weapon {
       "knife"
     );
     knife.body.setCircle(5);
+    knife.body.setOffset(0, 8);
     knife.setData("damage", this.damage);
     knife.setData("pierce", this.pierce);
     knife.setData("fromWeapon", this);
@@ -62,10 +64,11 @@ export class Knife extends Weapon {
     this.scene.projectiles.add(knife);
   }
 
-  onHit(projectile: Phaser.GameObjects.Sprite, enemy: Enemy) {
+  onProjectileHit(projectile: Phaser.GameObjects.Sprite, enemy: Enemy) {
     (enemy as Enemy).takeDamage(
       projectile.getData("damage"),
-      projectile.getCenter()
+      projectile.getCenter(),
+      this.knockback
     );
     const pierce = projectile.getData("pierce");
     if (pierce > 0) {
@@ -96,6 +99,7 @@ export class Knife extends Weapon {
       execute: () => {
         this.count += 1;
       },
+      canAppear: () => this.count < 4,
     };
   }
 
@@ -108,6 +112,7 @@ export class Knife extends Weapon {
         this.unequip();
         this.equip();
       },
+      canAppear: () => this.fireRate > 200,
     };
   }
 
@@ -118,6 +123,7 @@ export class Knife extends Weapon {
       execute: () => {
         this.pierce += 1;
       },
+      canAppear: () => this.pierce < 5,
     };
   }
 }
