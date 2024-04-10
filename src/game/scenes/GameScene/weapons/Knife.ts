@@ -9,6 +9,7 @@ export class Knife extends Weapon {
   speed = 500;
   pierce = 1;
   knockback = 2;
+  fireFromBack = false;
 
   constructor(scene: Game) {
     super(scene);
@@ -18,6 +19,7 @@ export class Knife extends Weapon {
       this.countUpgrade(),
       this.fireRateUpgrade(),
       this.pierceUpgrade(),
+      this.fireFromBackUpgrade(),
     ];
     this.id = "knife";
   }
@@ -38,6 +40,13 @@ export class Knife extends Weapon {
       this.scene.time.delayedCall(100, () => {
         this.createProjectile(baseAngle, i);
       });
+
+      if (this.fireFromBack) {
+        this.createProjectile(baseAngle + Math.PI, i);
+        this.scene.time.delayedCall(100, () => {
+          this.createProjectile(baseAngle + Math.PI, i);
+        });
+      }
     }
   }
 
@@ -100,7 +109,7 @@ export class Knife extends Weapon {
       execute: () => {
         this.count += 1;
       },
-      canAppear: () => this.count < 4,
+      canAppear: () => this.count < 2,
     };
   }
 
@@ -125,6 +134,17 @@ export class Knife extends Weapon {
         this.pierce += 1;
       },
       canAppear: () => this.pierce < 5,
+    };
+  }
+
+  fireFromBackUpgrade() {
+    return {
+      name: "Knife: Fire From Back",
+      description: "Throws knives backwards as well",
+      execute: () => {
+        this.fireFromBack = true;
+      },
+      canAppear: () => !this.fireFromBack,
     };
   }
 }
