@@ -27,6 +27,18 @@ export class Game extends Scene {
   }
 
   create() {
+    const map = this.make.tilemap({ key: "world" });
+    const tileset = map.addTilesetImage("ground", "ground");
+    if (!tileset) throw new Error("Tileset not found");
+    const layer = map.createLayer("Tile Layer 1", tileset);
+    if (!layer) throw new Error("Layer not found");
+
+    layer.setCollisionByProperty({ collides: true });
+
+    this.physics.world.setBounds(0, 0, 4000, 4000);
+    this.cameras.main.setBounds(0, 0, 4000, 4000);
+    this.cameras.main.setRoundPixels(true);
+
     this.enemies = this.add.group();
     this.projectiles = this.add.group();
     this.experienceOrbs = this.add.group();
@@ -35,6 +47,9 @@ export class Game extends Scene {
     this.player = new Player(this, 512, 384);
     new Knife(this).equip();
     new Axe(this).equip();
+
+    this.cameras.main.startFollow(this.player);
+    this.player.setCollideWorldBounds(true);
 
     this.physics.add.collider(this.player, this.enemies, (_p, _e) => {
       const player = _p as Player;
@@ -75,18 +90,31 @@ export class Game extends Scene {
     const randomPoint = randomLine.getRandomPoint();
 
     const seed = Phaser.Math.RND.integerInRange(0, 100);
-    let enemy: Enemy;
+    const enemies: Enemy[] = [];
     if (seed > 90) {
-      enemy = new FastBoy(this, randomPoint.x, randomPoint.y);
+      enemies.push(new FastBoy(this, randomPoint.x, randomPoint.y));
     } else if (seed > 80) {
-      enemy = new StrongBoy(this, randomPoint.x, randomPoint.y);
+      enemies.push(new StrongBoy(this, randomPoint.x, randomPoint.y));
     } else {
-      enemy = new Enemy(this, randomPoint.x, randomPoint.y);
+      const count = Phaser.Math.RND.integerInRange(1, 10);
+      for (let i = 0; i < count; i++) {
+        const positionOffset = new Phaser.Math.Vector2(
+          Phaser.Math.RND.integerInRange(-10, 10),
+          Phaser.Math.RND.integerInRange(-10, 10)
+        );
+        enemies.push(
+          new Enemy(
+            this,
+            randomPoint.x + positionOffset.x,
+            randomPoint.y + positionOffset.y
+          )
+        );
+      }
     }
 
-    this.enemies.add(enemy);
+    enemies.forEach((e) => this.enemies.add(e));
     this.time.delayedCall(
-      Math.max(600 - this.player.level * 10, 150),
+      Math.max(800 - this.player.level * 10, 150),
       this.spawnEnemy,
       [],
       this

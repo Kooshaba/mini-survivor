@@ -69,22 +69,24 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
 
     if (!this.glowSprite) {
-      this.setDirectControl(true);
-      const knockbackAngle = Phaser.Math.Angle.BetweenPoints(
-        originPosition,
-        this
-      );
-      this.scene.tweens.add({
-        targets: this,
-        duration: 200,
-        x: this.x + Math.cos(knockbackAngle) * knockback,
-        y: this.y + Math.sin(knockbackAngle) * knockback,
-        onComplete: () => {
-          if (this) {
-            this.setDirectControl(false);
-          }
-        },
-      });
+      if (knockback > 0) {
+        this.setDirectControl(true);
+        const knockbackAngle = Phaser.Math.Angle.BetweenPoints(
+          originPosition,
+          this
+        );
+        this.scene.tweens.add({
+          targets: this,
+          duration: 150,
+          x: this.x + Math.cos(knockbackAngle) * knockback,
+          y: this.y + Math.sin(knockbackAngle) * knockback,
+          onComplete: () => {
+            if (this) {
+              this.setDirectControl(false);
+            }
+          },
+        });
+      }
 
       this.glowSprite = this.scene.add.sprite(this.x, this.y, "");
       const currentAnim = this.anims.currentAnim;

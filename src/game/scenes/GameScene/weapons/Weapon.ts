@@ -16,7 +16,7 @@ export class Weapon extends Phaser.Physics.Arcade.Sprite {
   damage: number = 1;
   timer: Phaser.Time.TimerEvent;
   fireRate: number = 1000;
-  knockback: number = 5;
+  knockback: number = 0;
 
   possibleUpgrades: Upgrade[] = [];
 

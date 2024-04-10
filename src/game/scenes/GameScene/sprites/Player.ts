@@ -82,7 +82,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     });
     this.drawHealthBar();
 
-    this.scene.cameras.main.shake(50, 0.01);
+    this.scene.cameras.main.shake(100, 0.01);
 
     this.scene.tweens.add({
       targets: this,
@@ -102,7 +102,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   levelUp() {
     this.level++;
     this.experience = 0;
-    this.xpToNextLevel = this.level * 5 + Math.ceil(Math.log2(this.level) * 3);
+    this.xpToNextLevel = this.level * 20 + Math.ceil(Math.log2(this.level) * 3);
 
     this.scene.scene.pause();
 

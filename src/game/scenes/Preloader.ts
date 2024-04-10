@@ -30,6 +30,9 @@ export class Preloader extends Scene {
       frameHeight: 32,
     });
 
+    this.load.image("ground", "tiles/ground.png");
+    this.load.tilemapTiledJSON("world", "tiles/world.tmj");
+
     this.load.image("knife", "projectiles/knife.png");
     this.load.image("axe", "weapons/axe.png");
     this.load.image("experience-orb", "orb.png");

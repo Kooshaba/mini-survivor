@@ -5,23 +5,18 @@ import { Weapon } from "./Weapon";
 
 export class Axe extends Weapon {
   weaponRotation = 0;
-  rotationSpeed = 0.04;
+  rotationSpeed = 0.015;
+  knockback = 0;
 
   axes: Phaser.Physics.Arcade.Sprite[] = [];
 
   constructor(scene: Game) {
     super(scene);
-    this.damage = 20;
+    this.damage = 8;
     this.possibleUpgrades = [];
 
     this.id = "axe";
-    this.knockback = 25;
-    this.possibleUpgrades = [
-      this.damageUpgrade(),
-      this.knockbackUpgrade(),
-      this.speedUpgrade(),
-      this.additionAxeUpgrade(),
-    ];
+    this.possibleUpgrades = [this.damageUpgrade(), this.additionAxeUpgrade()];
 
     this.createProjectile();
   }
@@ -52,8 +47,8 @@ export class Axe extends Weapon {
       const offset = i * ((Math.PI * 2) / 3);
       axe.setRotation(angle + offset + Math.PI / 2);
       axe.setPosition(
-        this.scene.player.x + Math.cos(angle + offset) * 40,
-        this.scene.player.y + Math.sin(angle + offset) * 40
+        this.scene.player.x + Math.cos(angle + offset) * 120,
+        this.scene.player.y + Math.sin(angle + offset) * 120
       );
     }
   }
@@ -85,28 +80,6 @@ export class Axe extends Weapon {
       execute: () => {
         this.damage += 5;
       },
-    };
-  }
-
-  knockbackUpgrade() {
-    return {
-      name: "Axe: Knockback",
-      description: "Increase knockback by 10",
-      execute: () => {
-        this.knockback += 10;
-      },
-      canAppear: () => this.knockback < 100,
-    };
-  }
-
-  speedUpgrade() {
-    return {
-      name: "Axe: Speed",
-      description: "Increase speed by 10",
-      execute: () => {
-        this.rotationSpeed += 0.01;
-      },
-      canAppear: () => this.rotationSpeed < 0.1,
     };
   }
 

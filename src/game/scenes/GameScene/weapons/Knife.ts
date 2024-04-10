@@ -3,11 +3,12 @@ import { Enemy } from "../sprites/Enemy";
 import { Weapon } from "./Weapon";
 
 export class Knife extends Weapon {
-  damage = 10;
+  damage = 5;
   fireRate = 500;
   count = 1;
   speed = 500;
   pierce = 1;
+  knockback = 2;
 
   constructor(scene: Game) {
     super(scene);
