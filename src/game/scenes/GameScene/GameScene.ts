@@ -9,6 +9,8 @@ import { StrongBoy } from "./sprites/StrongBoy";
 import { RenderDepth } from "./types";
 import { Axe } from "./weapons/Axe";
 import { Knife } from "./weapons/Knife";
+import { Minimap } from "./Minimap";
+import { HugeBoy } from "./sprites/HugeBoy";
 
 export class Game extends Scene {
   title: GameObjects.Text;
@@ -21,6 +23,8 @@ export class Game extends Scene {
 
   experienceBar: GameObjects.Graphics;
   levelText: GameObjects.Text;
+
+  minimap: Minimap;
 
   constructor() {
     super("Game");
@@ -47,6 +51,8 @@ export class Game extends Scene {
     this.player = new Player(this, 512, 384);
     new Knife(this).equip();
     new Axe(this).equip();
+
+    this.minimap = new Minimap(this);
 
     this.cameras.main.startFollow(this.player);
     this.player.setCollideWorldBounds(true);
@@ -95,6 +101,8 @@ export class Game extends Scene {
       enemies.push(new FastBoy(this, randomPoint.x, randomPoint.y));
     } else if (seed > 80) {
       enemies.push(new StrongBoy(this, randomPoint.x, randomPoint.y));
+    } else if (seed > 70) {
+      enemies.push(new HugeBoy(this, randomPoint.x, randomPoint.y));
     } else {
       const count = Phaser.Math.RND.integerInRange(1, 10);
       for (let i = 0; i < count; i++) {
@@ -187,6 +195,8 @@ export class Game extends Scene {
     this.pickupExperience();
     this.moveExperienceOrbs();
     this.drawExperienceBar();
+
+    this.minimap.update();
   }
 }
 

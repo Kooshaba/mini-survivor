@@ -95,10 +95,11 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.glowSprite.anims.setCurrentFrame(currentAnim.frames[0]);
         this.glowSprite.stop();
         this.glowSprite.setTintFill(0xffffff);
-        this.glowSprite.setScale(this.scale);
+        this.glowSprite.setScale(this.scale * 0.9);
         this.glowSprite.setAlpha(0.75);
         this.glowSprite.setDepth(RenderDepth.PROJECTILE);
         this.glowSprite.setOrigin(this.originX, this.originY);
+        this.glowSprite.flipX = this.flipX;
         this.scene.add.tween({
           targets: this.glowSprite,
           alpha: 0,

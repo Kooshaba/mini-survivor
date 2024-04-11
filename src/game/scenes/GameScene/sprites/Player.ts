@@ -10,6 +10,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   experience = 0;
   level = 1;
   xpToNextLevel = 6;
+  xpBonus = 0;
 
   moveSpeed = 200;
   pickupRadius = 100;
@@ -23,6 +24,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.moveSpeedUpgrade(),
     this.pickupUpgrade(),
     this.maxHealthUpgrade(),
+    this.xpBonusUpgrade(),
   ];
 
   weapons: Weapon[] = [];
@@ -42,6 +44,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   onReceiveXp(amount: number) {
+    amount += amount * (1 + this.xpBonus);
+
     this.experience += amount;
     if (this.experience >= this.xpToNextLevel) {
       this.levelUp();
@@ -83,6 +87,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.drawHealthBar();
 
     this.scene.cameras.main.shake(100, 0.01);
+    this.scene.scene.pause("Game");
+    this.scene.scene.resume("Game");
 
     this.scene.tweens.add({
       targets: this,
@@ -109,7 +115,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     const possibleUpgrades = this.weapons
       .map((w) => w.possibleUpgrades)
       .flat()
-      .filter((u) => u.canAppear?.());
+      .filter((u) => (u.canAppear ? u.canAppear() : true));
     possibleUpgrades.push(...this.possibleUpgrades);
     const upgradeChoices = Phaser.Math.RND.shuffle(possibleUpgrades).slice(
       0,
@@ -125,7 +131,12 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.healthBar?.destroy();
     this.healthBar = this.scene.add.graphics();
     this.healthBar.fillStyle(0x00ff00, 1);
-    this.healthBar.fillRect(24, 24, 160 * (this.health / this.totalHealth), 16);
+    this.healthBar.fillRect(
+      24,
+      224,
+      160 * (this.health / this.totalHealth),
+      16
+    );
     this.healthBar.setDepth(RenderDepth.UI);
     this.healthBar.setScrollFactor(0);
   }
@@ -192,6 +203,16 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       execute: () => {
         this.totalHealth += 10;
         this.health += 10;
+      },
+    };
+  }
+
+  xpBonusUpgrade() {
+    return {
+      name: "Player: XP Bonus",
+      description: "Increases the player's XP bonus",
+      execute: () => {
+        this.xpBonus += 0.05;
       },
     };
   }
