@@ -100,7 +100,7 @@ export class Bow extends Weapon {
 
   fireRateUpgrade() {
     return {
-      name: "Fire Rate",
+      name: "Bow: Fire Rate",
       description: "Increases the fire rate of the bow",
       execute: () => {
         this.fireRate -= 25;
@@ -112,7 +112,7 @@ export class Bow extends Weapon {
 
   damageUpgrade() {
     return {
-      name: "Damage",
+      name: "Bow: Damage",
       description: "Increases the damage of the bow",
       execute: () => {
         this.damage += 2;

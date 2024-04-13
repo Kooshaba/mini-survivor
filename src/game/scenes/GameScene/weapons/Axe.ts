@@ -57,9 +57,10 @@ export class Axe extends Weapon {
     const hitEnemies = p.getData("hitEnemies") as Enemy[];
 
     if (hitEnemies.find((e) => e === enemy.getData("id"))) return;
+
     hitEnemies.push(enemy.getData("id"));
     p.setData("hitEnemies", hitEnemies);
-    this.scene.time.delayedCall(250, () => {
+    this.scene.time.delayedCall(500, () => {
       const hitEnemies = p.getData("hitEnemies") as Enemy[];
       const index = hitEnemies.findIndex((e) => e === enemy.getData("id"));
       hitEnemies.splice(index, 1);

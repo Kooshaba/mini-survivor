@@ -1,4 +1,3 @@
-import { EventBus } from "../../../EventBus";
 import { Game } from "../GameScene";
 import { RenderDepth } from "../types";
 import { Weapon } from "../weapons/Weapon";
@@ -121,8 +120,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       3
     );
 
-    EventBus.emit("player-level-up", {
-      upgrades: upgradeChoices,
+    this.scene.scene.launch("UpgradeScene", {
+      upgradeChoices,
+      player: this,
     });
   }
 

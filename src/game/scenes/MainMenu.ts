@@ -22,6 +22,22 @@ export class MainMenu extends Scene {
       .setOrigin(0.5)
       .setDepth(100);
 
+    this.add
+      .text(512, 340, "Click Anywhere to Start", {
+        fontFamily: "Arial Black",
+        fontSize: 16,
+        color: "#ffffff",
+        stroke: "#000000",
+        strokeThickness: 6,
+        align: "center",
+      })
+      .setOrigin(0.5)
+      .setDepth(100);
+
     EventBus.emit("current-scene-ready", this);
+
+    this.input.once("pointerdown", () => {
+      this.scene.start("Game");
+    });
   }
 }

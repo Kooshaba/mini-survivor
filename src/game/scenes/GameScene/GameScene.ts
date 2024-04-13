@@ -49,6 +49,7 @@ export class Game extends Scene {
     this.experienceOrbs = this.add.group();
 
     this.player = new Player(this, 512, 384);
+    this.player.levelUp();
     new Knife(this).equip();
     new Axe(this).equip();
     new Bow(this).equip();

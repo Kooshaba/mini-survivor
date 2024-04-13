@@ -3,6 +3,7 @@ import { MainMenu } from "./scenes/MainMenu";
 import { AUTO, Game } from "phaser";
 import { Preloader } from "./scenes/Preloader";
 import { Game as GameScene } from "./scenes/GameScene";
+import { UpgradeScene } from "./scenes/UpgradeScene";
 
 //  Find out more information about the Game Config at:
 //  https://newdocs.phaser.io/docs/3.70.0/Phaser.Types.Core.GameConfig
@@ -12,7 +13,7 @@ const config: Phaser.Types.Core.GameConfig = {
   height: 768,
   parent: "game-container",
   backgroundColor: "#028af8",
-  scene: [Boot, Preloader, MainMenu, GameScene],
+  scene: [Boot, Preloader, MainMenu, GameScene, UpgradeScene],
   physics: {
     default: "arcade",
     arcade: {
