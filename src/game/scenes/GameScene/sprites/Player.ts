@@ -12,7 +12,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   xpToNextLevel = 6;
   xpBonus = 0;
 
-  moveSpeed = 200;
+  moveSpeed = 180;
   pickupRadius = 100;
 
   healthBar: Phaser.GameObjects.Graphics | undefined;
@@ -38,6 +38,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.play("wizard-idle");
     this.body.setCircle(10);
     this.body.setOffset(6, 10);
+    this.body.setDirectControl(true);
     this.setDepth(RenderDepth.PLAYER);
 
     this.drawHealthBar();
@@ -87,8 +88,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.drawHealthBar();
 
     this.scene.cameras.main.shake(100, 0.01);
-    this.scene.scene.pause("Game");
-    this.scene.scene.resume("Game");
 
     this.scene.tweens.add({
       targets: this,
@@ -169,7 +168,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.body.setVelocityY(0);
     }
 
-    this.body.velocity.normalize().scale((this.moveSpeed * delta) / 10);
+    this.setPosition(
+      this.x + this.body.velocity.x * this.moveSpeed * (delta / 1000),
+      this.y + this.body.velocity.y * this.moveSpeed * (delta / 1000)
+    );
 
     if (this.body.velocity.length() > 0) {
       this.lastDirection = this.body.velocity.clone().normalize();
