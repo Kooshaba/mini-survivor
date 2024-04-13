@@ -94,7 +94,7 @@ export class Knife extends Weapon {
       execute: () => {
         this.count += 1;
       },
-      canAppear: () => this.count < 2,
+      canAppear: () => this.count < 6,
     };
   }
 
