@@ -3,13 +3,12 @@ import { Enemy } from "../sprites/Enemy";
 import { Weapon } from "./Weapon";
 
 export class Knife extends Weapon {
-  damage = 5;
+  damage = 8;
   fireRate = 500;
-  count = 1;
+  count = 2;
   speed = 500;
   pierce = 1;
   knockback = 2;
-  fireFromBack = false;
 
   constructor(scene: Game) {
     super(scene);
@@ -19,38 +18,24 @@ export class Knife extends Weapon {
       this.countUpgrade(),
       this.fireRateUpgrade(),
       this.pierceUpgrade(),
-      this.fireFromBackUpgrade(),
     ];
     this.id = "knife";
   }
 
   fire() {
-    const baseDirection = this.scene.player.lastDirection.clone().normalize();
-    const baseAngle =
-      Phaser.Math.Angle.Between(
-        this.scene.player.x,
-        this.scene.player.y,
-        this.scene.player.x + baseDirection.x,
-        this.scene.player.y + baseDirection.y
-      ) -
-      ((this.count - 1) * (Math.PI / 20)) / 2;
+    const baseAngle = 0;
 
     for (let i = 0; i < this.count; i++) {
-      this.createProjectile(baseAngle, i);
-      this.scene.time.delayedCall(100, () => {
-        this.createProjectile(baseAngle, i);
-      });
+      const flip = i % 2 === 1 ? Math.PI : 0;
+      const launchAngle = baseAngle + flip;
 
-      if (this.fireFromBack) {
-        this.createProjectile(baseAngle + Math.PI, i);
-        this.scene.time.delayedCall(100, () => {
-          this.createProjectile(baseAngle + Math.PI, i);
-        });
-      }
+      this.scene.time.delayedCall(i * 100, () => {
+        this.createProjectile(launchAngle);
+      });
     }
   }
 
-  createProjectile(baseAngle: number, index: number) {
+  createProjectile(baseAngle: number) {
     const knife = this.scene.physics.add.sprite(
       this.scene.player.x,
       this.scene.player.y,
@@ -63,7 +48,7 @@ export class Knife extends Weapon {
     knife.setData("fromWeapon", this);
     knife.setData("alreadyHit", []);
 
-    const angle = baseAngle + index * (Math.PI / 20);
+    const angle = baseAngle;
     knife.setRotation(angle + Math.PI / 2);
     const direction = new Phaser.Math.Vector2(Math.cos(angle), Math.sin(angle));
     knife.setVelocity(direction.x * this.speed, direction.y * this.speed);
@@ -134,17 +119,6 @@ export class Knife extends Weapon {
         this.pierce += 1;
       },
       canAppear: () => this.pierce < 5,
-    };
-  }
-
-  fireFromBackUpgrade() {
-    return {
-      name: "Knife: Fire From Back",
-      description: "Throws knives backwards as well",
-      execute: () => {
-        this.fireFromBack = true;
-      },
-      canAppear: () => !this.fireFromBack,
     };
   }
 }
