@@ -9,7 +9,7 @@ export class Bow extends Weapon {
   rotationSpeed = 0.08;
   closestEnemy: Enemy | null = null;
   minRange = 600;
-  fireRate = 250;
+  fireRate = 400;
   damage = 10;
   knockback = 2;
 

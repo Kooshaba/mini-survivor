@@ -4,7 +4,7 @@ import { Weapon } from "./Weapon";
 
 export class Knife extends Weapon {
   damage = 8;
-  fireRate = 500;
+  fireRate = 900;
   count = 2;
   speed = 500;
   pierce = 1;
