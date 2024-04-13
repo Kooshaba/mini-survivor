@@ -38,8 +38,8 @@ export class Axe extends Weapon {
     this.scene.projectiles.add(axe);
   }
 
-  update() {
-    this.weaponRotation += this.rotationSpeed;
+  update(_time: number, delta: number) {
+    this.weaponRotation += (this.rotationSpeed * delta) / 16;
 
     const angle = this.weaponRotation;
     for (let i = 0; i < this.axes.length; i++) {

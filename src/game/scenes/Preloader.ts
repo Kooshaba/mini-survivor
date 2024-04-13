@@ -34,7 +34,9 @@ export class Preloader extends Scene {
     this.load.tilemapTiledJSON("world", "tiles/world.tmj");
 
     this.load.image("knife", "projectiles/knife.png");
+    this.load.image("arrow", "projectiles/arrow.png");
     this.load.image("axe", "weapons/axe.png");
+    this.load.image("bow", "weapons/bow.png");
     this.load.image("experience-orb", "orb.png");
   }
 

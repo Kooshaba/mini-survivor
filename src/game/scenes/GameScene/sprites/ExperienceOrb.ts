@@ -7,7 +7,7 @@ export class ExperienceOrb extends Phaser.Physics.Arcade.Sprite {
   declare scene: Game;
 
   currentTween: Phaser.Tweens.Tween;
-  goTowardsPlayer: number = 0;
+  goTowardsPlayerSpeed: number = 0;
   canPickUp: boolean = false;
 
   constructor(scene: Game, x: number, y: number) {
@@ -30,7 +30,7 @@ export class ExperienceOrb extends Phaser.Physics.Arcade.Sprite {
 
     this.scene.experienceOrbs.add(this);
 
-    this.goTowardsPlayer = 0;
+    this.goTowardsPlayerSpeed = 0;
     this.canPickUp = false;
 
     this.scene.time.delayedCall(500, () => {
@@ -70,7 +70,7 @@ export class ExperienceOrb extends Phaser.Physics.Arcade.Sprite {
       duration: 150,
       ease: "Sine.easeInOut",
       onComplete: () => {
-        this.goTowardsPlayer = Phaser.Math.RND.realInRange(190, 220);
+        this.goTowardsPlayerSpeed = Phaser.Math.RND.realInRange(320, 380);
       },
     });
   }

@@ -44,7 +44,8 @@ export class Weapon extends Phaser.Physics.Arcade.Sprite {
 
   fire() {}
 
-  update() {}
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  update(_time: number, _delta: number) {}
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onProjectileHit(_p: Phaser.GameObjects.Sprite, _enemy: Enemy) {}

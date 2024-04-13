@@ -141,12 +141,12 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.healthBar.setScrollFactor(0);
   }
 
-  update(): void {
-    this.move();
-    this.weapons.map((w) => w.update());
+  update(time: number, delta: number): void {
+    this.move(delta);
+    this.weapons.map((w) => w.update(time, delta));
   }
 
-  move() {
+  move(delta: number) {
     if (!this.scene.input.keyboard) return;
 
     // Move the player left or right
@@ -169,7 +169,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.body.setVelocityY(0);
     }
 
-    this.body.velocity.normalize().scale(this.moveSpeed);
+    this.body.velocity.normalize().scale((this.moveSpeed * delta) / 10);
 
     if (this.body.velocity.length() > 0) {
       this.lastDirection = this.body.velocity.clone().normalize();

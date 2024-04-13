@@ -11,6 +11,7 @@ import { Axe } from "./weapons/Axe";
 import { Knife } from "./weapons/Knife";
 import { Minimap } from "./Minimap";
 import { HugeBoy } from "./sprites/HugeBoy";
+import { Bow } from "./weapons/Bow";
 
 export class Game extends Scene {
   title: GameObjects.Text;
@@ -46,15 +47,21 @@ export class Game extends Scene {
     this.enemies = this.add.group();
     this.projectiles = this.add.group();
     this.experienceOrbs = this.add.group();
-    this.weapons = this.add.group();
 
     this.player = new Player(this, 512, 384);
     new Knife(this).equip();
     new Axe(this).equip();
+    new Bow(this).equip();
+
+    const spawnCircle = new Phaser.Geom.Circle(512, 384, 800);
+    const points = spawnCircle.getPoints(8);
+    points.forEach((point) => {
+      this.enemies.add(new Enemy(this, point.x, point.y));
+    });
 
     this.minimap = new Minimap(this);
 
-    this.cameras.main.startFollow(this.player);
+    this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
     this.player.setCollideWorldBounds(true);
 
     this.physics.add.collider(this.player, this.enemies, (_p, _e) => {
@@ -152,8 +159,8 @@ export class Game extends Scene {
         return;
       }
 
-      if (orb.goTowardsPlayer) {
-        this.physics.moveToObject(orb, this.player, orb.goTowardsPlayer);
+      if (orb.goTowardsPlayerSpeed) {
+        this.physics.moveToObject(orb, this.player, orb.goTowardsPlayerSpeed);
       }
     });
   }
@@ -183,10 +190,10 @@ export class Game extends Scene {
     );
   }
 
-  update() {
+  update(time: number, delta: number) {
     if (!this.player) return;
 
-    this.player.update();
+    this.player.update(time, delta);
 
     this.enemies.getChildren().forEach((enemy) => {
       enemy.update();
