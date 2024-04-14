@@ -3,10 +3,10 @@ import { Enemy } from "../sprites/Enemy";
 import { Weapon } from "./Weapon";
 
 export class Knife extends Weapon {
-  damage = 8;
+  damage = 12;
   fireRate = 900;
-  count = 2;
-  speed = 500;
+  count = 3;
+  speed = 800;
   pierce = 1;
   knockback = 2;
 
@@ -23,19 +23,25 @@ export class Knife extends Weapon {
   }
 
   fire() {
-    const baseAngle = 0;
+    const baseDirection = this.scene.player.lastDirection.clone().normalize();
+    const baseAngle =
+      Phaser.Math.Angle.Between(
+        this.scene.player.x,
+        this.scene.player.y,
+        this.scene.player.x + baseDirection.x,
+        this.scene.player.y + baseDirection.y
+      ) -
+      ((this.count - 1) * (Math.PI / 100)) / 2;
 
     for (let i = 0; i < this.count; i++) {
-      const flip = i % 2 === 1 ? Math.PI : 0;
-      const launchAngle = baseAngle + flip;
-
-      this.scene.time.delayedCall(i * 100, () => {
-        this.createProjectile(launchAngle);
+      this.createProjectile(baseAngle, i);
+      this.scene.time.delayedCall(100, () => {
+        this.createProjectile(baseAngle, i);
       });
     }
   }
 
-  createProjectile(baseAngle: number) {
+  createProjectile(baseAngle: number, index: number) {
     const knife = this.scene.physics.add.sprite(
       this.scene.player.x,
       this.scene.player.y,
@@ -48,7 +54,7 @@ export class Knife extends Weapon {
     knife.setData("fromWeapon", this);
     knife.setData("alreadyHit", []);
 
-    const angle = baseAngle;
+    const angle = baseAngle + index * (Math.PI / 100);
     knife.setRotation(angle + Math.PI / 2);
     const direction = new Phaser.Math.Vector2(Math.cos(angle), Math.sin(angle));
     knife.setVelocity(direction.x * this.speed, direction.y * this.speed);

@@ -70,10 +70,8 @@ export class UpgradeScene extends Phaser.Scene {
         targets: card,
         scaleX: 1.03,
         scaleY: 1.03,
-        ease: "Sine.easeInOut",
-        yoyo: true,
-        repeat: 1,
-        duration: 80,
+        ease: Phaser.Math.Easing.Cubic.InOut,
+        duration: 100,
       });
     });
 
