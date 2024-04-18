@@ -49,7 +49,6 @@ export class Game extends Scene {
     this.experienceOrbs = this.add.group();
 
     this.player = new Player(this, 512, 384);
-    this.player.levelUp();
     new Knife(this).equip();
     new Axe(this).equip();
     new Bow(this).equip();
@@ -109,7 +108,7 @@ export class Game extends Scene {
       enemies.push(new FastBoy(this, randomPoint.x, randomPoint.y));
     } else if (seed > 80) {
       enemies.push(new StrongBoy(this, randomPoint.x, randomPoint.y));
-    } else if (seed > 70) {
+    } else if (seed > 77) {
       enemies.push(new HugeBoy(this, randomPoint.x, randomPoint.y));
     } else {
       const count = Phaser.Math.RND.integerInRange(1, 10);
@@ -130,7 +129,7 @@ export class Game extends Scene {
 
     enemies.forEach((e) => this.enemies.add(e));
     this.time.delayedCall(
-      Math.max(800 - this.player.level * 10, 150),
+      Math.max(1000 - this.player.level * 10, 150),
       this.spawnEnemy,
       [],
       this
@@ -154,7 +153,7 @@ export class Game extends Scene {
       );
 
       if (rangeToPlayer < 20) {
-        this.player.onReceiveXp(1);
+        this.player.onReceiveXp(orb.value);
 
         orb.destroy();
         return;

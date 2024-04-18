@@ -4,14 +4,20 @@ import { Upgrade } from "../GameScene/weapons/Weapon";
 export class UpgradeScene extends Phaser.Scene {
   player: Player;
   upgradeChoices: Upgrade[];
+  onFinishCallback: () => void;
 
   constructor() {
     super("UpgradeScene");
   }
 
-  init(data: { player: Player; upgradeChoices: Upgrade[] }) {
+  init(data: {
+    player: Player;
+    upgradeChoices: Upgrade[];
+    onFinish: () => void;
+  }) {
     this.player = data.player;
     this.upgradeChoices = data.upgradeChoices;
+    this.onFinishCallback = data.onFinish;
 
     for (let i = 0; i < this.upgradeChoices.length; i++) {
       this.createUpgradeCard(this.upgradeChoices[i], i);
@@ -59,7 +65,7 @@ export class UpgradeScene extends Phaser.Scene {
         onComplete: () => {
           upgrade.execute();
           this.scene.stop();
-          this.scene.resume("Game");
+          this.onFinishCallback();
         },
       });
     });

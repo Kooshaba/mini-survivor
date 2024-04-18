@@ -11,6 +11,7 @@ export class HugeBoy extends Enemy {
     this.totalHealth = 750;
     this.xp = 250;
     this.damage = 10;
+    this.xpDropChance = 1;
 
     this.setTint(0xff0000);
     this.setScale(3);

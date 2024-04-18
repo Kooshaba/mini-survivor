@@ -9,8 +9,9 @@ export class ExperienceOrb extends Phaser.Physics.Arcade.Sprite {
   currentTween: Phaser.Tweens.Tween;
   goTowardsPlayerSpeed: number = 0;
   canPickUp: boolean = false;
+  value: number = 1;
 
-  constructor(scene: Game, x: number, y: number) {
+  constructor(scene: Game, x: number, y: number, value?: number) {
     super(scene, x, y, "experience-orb");
     scene.add.existing(this);
     scene.physics.add.existing(this);
@@ -32,6 +33,14 @@ export class ExperienceOrb extends Phaser.Physics.Arcade.Sprite {
 
     this.goTowardsPlayerSpeed = 0;
     this.canPickUp = false;
+    if (value) this.value = value;
+
+    if (this.value > 10) {
+      this.setTint(0xff0000);
+      this.setScale(0.8);
+    } else if (this.value > 5) {
+      this.setTint(0x00ff00);
+    }
 
     this.scene.time.delayedCall(500, () => {
       this.canPickUp = true;

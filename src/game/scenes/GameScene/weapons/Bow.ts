@@ -10,7 +10,7 @@ export class Bow extends Weapon {
   closestEnemy: Enemy | null = null;
   minRange = 600;
   fireRate = 400;
-  damage = 10;
+  damage = 20;
   knockback = 2;
 
   constructor(scene: Game) {

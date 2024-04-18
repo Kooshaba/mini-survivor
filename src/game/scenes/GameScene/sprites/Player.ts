@@ -1,6 +1,6 @@
 import { Game } from "../GameScene";
 import { RenderDepth } from "../types";
-import { Weapon } from "../weapons/Weapon";
+import { Upgrade, Weapon } from "../weapons/Weapon";
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
   declare body: Phaser.Physics.Arcade.Body;
@@ -18,6 +18,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   health: number = 100;
   totalHealth: number = 100;
   immune: boolean = false;
+
+  queuedLevelUps: {
+    upgradeChoices: Upgrade[];
+    timeAcquired: number;
+  }[] = [];
 
   possibleUpgrades = [
     this.moveSpeedUpgrade(),
@@ -47,7 +52,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     amount += amount * (1 + this.xpBonus);
 
     this.experience += amount;
-    if (this.experience >= this.xpToNextLevel) {
+    while (this.experience >= this.xpToNextLevel) {
       this.levelUp();
       this.drawHealthBar();
     }
@@ -103,12 +108,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
+  // TODO queue a bunch of level up events
+  // so the player can level many times from picking up a single orb
+  // right now it cuts it off
   levelUp() {
     this.level++;
-    this.experience = 0;
+    this.experience -= this.xpToNextLevel;
     this.xpToNextLevel = this.level * 20 + Math.ceil(Math.log2(this.level) * 3);
-
-    this.scene.scene.pause();
 
     const possibleUpgrades = this.weapons
       .map((w) => w.possibleUpgrades)
@@ -120,10 +126,34 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       3
     );
 
-    this.scene.scene.launch("UpgradeScene", {
+    this.queuedLevelUps.push({
       upgradeChoices,
-      player: this,
+      timeAcquired: this.scene.time.now,
     });
+  }
+
+  async checkLevelUps() {
+    const lastLevelUp = this.queuedLevelUps[this.queuedLevelUps.length - 1];
+    if (!lastLevelUp) return;
+
+    if (lastLevelUp.timeAcquired + 2_000 < this.scene.time.now) {
+      this.scene.scene.pause("Game");
+
+      for (const levelUp of this.queuedLevelUps) {
+        const promise = new Promise<void>((resolve) => {
+          this.scene.scene.launch("UpgradeScene", {
+            upgradeChoices: levelUp.upgradeChoices,
+            player: this,
+            onFinish: () => resolve(),
+          });
+        });
+
+        await promise;
+      }
+
+      this.queuedLevelUps = [];
+      this.scene.scene.resume("Game");
+    }
   }
 
   drawHealthBar() {
@@ -143,6 +173,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   update(time: number, delta: number): void {
     this.move(delta);
     this.weapons.map((w) => w.update(time, delta));
+    this.checkLevelUps();
   }
 
   move(delta: number) {
@@ -168,10 +199,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.body.setVelocityY(0);
     }
 
-    this.setPosition(
-      this.x + this.body.velocity.x * this.moveSpeed * (delta / 1000),
-      this.y + this.body.velocity.y * this.moveSpeed * (delta / 1000)
-    );
+    const moveVector = new Phaser.Math.Vector2(
+      this.body.velocity.x,
+      this.body.velocity.y
+    )
+      .normalize()
+      .scale(this.moveSpeed * (delta / 1000));
+    this.setPosition(this.x + moveVector.x, this.y + moveVector.y);
 
     if (this.body.velocity.length() > 0) {
       this.lastDirection = this.body.velocity.clone().normalize();

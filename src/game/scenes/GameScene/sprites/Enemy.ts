@@ -6,11 +6,12 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   declare body: Phaser.Physics.Arcade.Body;
   declare scene: Game;
 
-  speed = 100;
-  baseSpeed = 100;
-  health: number = 25;
-  totalHealth: number = 25;
+  speed = 50;
+  baseSpeed = 50;
+  health: number = 40;
+  totalHealth: number = 40;
   baseTint: number = 0xffffff;
+  xpDropChance = 0.5;
   xp: number = 3;
   damage: number = 5;
 
@@ -123,13 +124,9 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
   onDeath() {
     if (!this.scene) return;
-
-    const circle = new Phaser.Geom.Circle(this.x, this.y, 20);
-    const points = circle.getPoints(this.xp);
-    for (let i = 0; i < points.length; i++) {
-      const point = points[i];
-
-      const orb = new ExperienceOrb(this.scene, point.x, point.y);
+    const dropSeed = Phaser.Math.RND.realInRange(0, 1);
+    if (dropSeed <= this.xpDropChance) {
+      const orb = new ExperienceOrb(this.scene, this.x, this.y, this.xp);
       orb.setAlpha(0);
       orb.setScale(0);
       this.scene.tweens.add({
