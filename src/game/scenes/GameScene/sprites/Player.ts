@@ -136,7 +136,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     const lastLevelUp = this.queuedLevelUps[this.queuedLevelUps.length - 1];
     if (!lastLevelUp) return;
 
-    if (lastLevelUp.timeAcquired + 2_000 < this.scene.time.now) {
+    if (lastLevelUp.timeAcquired + 500 < this.scene.time.now) {
       this.scene.scene.pause("Game");
 
       for (const levelUp of this.queuedLevelUps) {
