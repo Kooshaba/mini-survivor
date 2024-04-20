@@ -37,6 +37,7 @@ export class Preloader extends Scene {
     this.load.image("arrow", "projectiles/arrow.png");
     this.load.image("axe", "weapons/axe.png");
     this.load.image("bow", "weapons/bow.png");
+    this.load.image("sickle", "weapons/sickle.png");
     this.load.image("experience-orb", "orb.png");
   }
 

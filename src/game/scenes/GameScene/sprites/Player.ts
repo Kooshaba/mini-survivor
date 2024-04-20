@@ -1,5 +1,9 @@
 import { Game } from "../GameScene";
 import { RenderDepth } from "../types";
+import { Axe } from "../weapons/Axe";
+import { Bow } from "../weapons/Bow";
+import { Knife } from "../weapons/Knife";
+import { Sickle } from "../weapons/Sickle";
 import { Upgrade, Weapon } from "../weapons/Weapon";
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
@@ -19,6 +23,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   totalHealth: number = 100;
   immune: boolean = false;
 
+  killCount = 0;
+
   queuedLevelUps: {
     upgradeChoices: Upgrade[];
     timeAcquired: number;
@@ -29,6 +35,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.pickupUpgrade(),
     this.maxHealthUpgrade(),
     this.xpBonusUpgrade(),
+    this.equipAxe(),
+    this.equipBow(),
+    this.equipKnife(),
+    this.equipSickle(),
   ];
 
   weapons: Weapon[] = [];
@@ -46,6 +56,28 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.setDepth(RenderDepth.PLAYER);
 
     this.drawHealthBar();
+
+    this.scene.time.addEvent({
+      delay: 5_000,
+      loop: true,
+      callback: () => {
+        this.weapons.forEach((w) => {
+          console.log(w.id);
+          console.log(`Total Damage: ${w.totalDamageDealt}`);
+          console.log(`Time Equipped: ${w.timeEquipped}`);
+          console.log(`DPS ${w.totalDamageDealt / (w.timeEquipped / 1000)}`);
+        });
+      },
+    });
+  }
+
+  initialUpgrades() {
+    return [
+      this.equipAxe(),
+      this.equipBow(),
+      this.equipKnife(),
+      this.equipSickle(),
+    ];
   }
 
   onReceiveXp(amount: number) {
@@ -60,7 +92,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     const graphics = this.scene.add.graphics();
     const circle = new Phaser.Geom.Circle(this.x, this.y, 1);
 
-    const endRadius = 40;
+    const endRadius = Math.min(10 + amount * 3, 60);
     this.scene.tweens.add({
       targets: circle,
       radius: endRadius,
@@ -116,11 +148,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.experience -= this.xpToNextLevel;
     this.xpToNextLevel = this.level * 20 + Math.ceil(Math.log2(this.level) * 3);
 
-    const possibleUpgrades = this.weapons
-      .map((w) => w.possibleUpgrades)
-      .flat()
-      .filter((u) => (u.canAppear ? u.canAppear() : true));
+    let possibleUpgrades = this.weapons.map((w) => w.possibleUpgrades).flat();
     possibleUpgrades.push(...this.possibleUpgrades);
+    possibleUpgrades = possibleUpgrades.filter((u) =>
+      u.canAppear ? u.canAppear() : true
+    );
     const upgradeChoices = Phaser.Math.RND.shuffle(possibleUpgrades).slice(
       0,
       3
@@ -172,7 +204,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
   update(time: number, delta: number): void {
     this.move(delta);
-    this.weapons.map((w) => w.update(time, delta));
+    this.weapons.map((w) => {
+      w.update(time, delta);
+      w.timeEquipped += delta;
+    });
     this.checkLevelUps();
   }
 
@@ -212,6 +247,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
+  incrementKillCount() {
+    this.killCount++;
+  }
+
   moveSpeedUpgrade() {
     return {
       name: "Player: Move Speed",
@@ -249,6 +288,58 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       description: "Increases the player's XP bonus",
       execute: () => {
         this.xpBonus += 0.05;
+      },
+    };
+  }
+
+  equipBow() {
+    return {
+      name: "Gain Bow",
+      description: "",
+      execute: () => {
+        new Bow(this.scene).equip();
+      },
+      canAppear: () => {
+        return !this.weapons.find((w) => w.id === "bow");
+      },
+    };
+  }
+
+  equipAxe() {
+    return {
+      name: "Gain Axe",
+      description: "",
+      execute: () => {
+        new Axe(this.scene).equip();
+      },
+      canAppear: () => {
+        return !this.weapons.find((w) => w.id === "axe");
+      },
+    };
+  }
+
+  equipSickle() {
+    return {
+      name: "Gain Sickle",
+      description: "",
+      execute: () => {
+        new Sickle(this.scene).equip();
+      },
+      canAppear: () => {
+        return !this.weapons.find((w) => w.id === "sickle");
+      },
+    };
+  }
+
+  equipKnife() {
+    return {
+      name: "Gain Knife",
+      description: "",
+      execute: () => {
+        new Knife(this.scene).equip();
+      },
+      canAppear: () => {
+        return !this.weapons.find((w) => w.id === "knife");
       },
     };
   }

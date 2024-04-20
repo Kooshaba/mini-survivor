@@ -4,13 +4,14 @@ import { RenderDepth } from "../types";
 import { Weapon } from "./Weapon";
 
 export class Bow extends Weapon {
+  id = "bow";
   weaponRotation = 0;
   targetAngle = 0;
   rotationSpeed = 0.08;
   closestEnemy: Enemy | null = null;
   minRange = 600;
-  fireRate = 400;
-  damage = 20;
+  fireRate = 1000;
+  damage = 80;
   knockback = 2;
 
   constructor(scene: Game) {
@@ -55,7 +56,7 @@ export class Bow extends Weapon {
     if (hitEnemies.find((e) => e === enemy.getData("id"))) return;
     hitEnemies.push(enemy.getData("id"));
 
-    enemy.takeDamage(this.damage, p.getCenter(), this.knockback);
+    enemy.takeDamage(this, this.damage, p.getCenter(), this.knockback);
     p.destroy();
   }
 
@@ -115,7 +116,7 @@ export class Bow extends Weapon {
       name: "Bow: Damage",
       description: "Increases the damage of the bow",
       execute: () => {
-        this.damage += 2;
+        this.damage += 4;
       },
     };
   }

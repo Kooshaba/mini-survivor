@@ -18,6 +18,9 @@ export class Weapon extends Phaser.Physics.Arcade.Sprite {
   fireRate: number = 1000;
   knockback: number = 0;
 
+  totalDamageDealt = 0;
+  timeEquipped = 0;
+
   possibleUpgrades: Upgrade[] = [];
 
   constructor(scene: Game) {

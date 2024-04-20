@@ -1,5 +1,6 @@
 import { Game } from "../GameScene";
 import { RenderDepth } from "../types";
+import { Weapon } from "../weapons/Weapon";
 import { ExperienceOrb } from "./ExperienceOrb";
 
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
@@ -12,7 +13,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   totalHealth: number = 40;
   baseTint: number = 0xffffff;
   xpDropChance = 0.5;
-  xp: number = 3;
+  xp: number = 5;
   damage: number = 5;
 
   healthBar: Phaser.GameObjects.Graphics;
@@ -35,10 +36,13 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   }
 
   takeDamage(
+    weapon: Weapon,
     damage: number,
     originPosition: Phaser.Math.Vector2,
     knockback: number
   ) {
+    weapon.totalDamageDealt += damage;
+
     this.speed = 20;
     this.scene.tweens.add({
       targets: this,
@@ -136,6 +140,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         duration: 150,
       });
     }
+    this.scene.player.incrementKillCount();
 
     this.healthBar?.destroy();
     this.destroy();

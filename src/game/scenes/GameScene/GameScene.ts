@@ -4,20 +4,18 @@ import { EventBus } from "../../EventBus";
 import { Enemy } from "./sprites/Enemy";
 import { ExperienceOrb } from "./sprites/ExperienceOrb";
 import { Player } from "./sprites/Player";
-import { FastBoy } from "./sprites/FastBoy";
-import { StrongBoy } from "./sprites/StrongBoy";
 import { RenderDepth } from "./types";
-import { Axe } from "./weapons/Axe";
-import { Knife } from "./weapons/Knife";
 import { Minimap } from "./Minimap";
-import { HugeBoy } from "./sprites/HugeBoy";
-import { Bow } from "./weapons/Bow";
+import { createEnemyManager } from "./createEnemyManager";
+import { shuffle } from "lodash";
 
 export class Game extends Scene {
   title: GameObjects.Text;
   player: Player;
 
   enemies: Phaser.GameObjects.Group;
+  enemyManager: ReturnType<typeof createEnemyManager>;
+
   projectiles: Phaser.GameObjects.Group;
   weapons: Phaser.GameObjects.Group;
   experienceOrbs: Phaser.GameObjects.Group;
@@ -26,6 +24,7 @@ export class Game extends Scene {
   levelText: GameObjects.Text;
 
   minimap: Minimap;
+  killCountText: Phaser.GameObjects.Text;
 
   constructor() {
     super("Game");
@@ -49,9 +48,16 @@ export class Game extends Scene {
     this.experienceOrbs = this.add.group();
 
     this.player = new Player(this, 512, 384);
-    new Knife(this).equip();
-    new Axe(this).equip();
-    new Bow(this).equip();
+    this.player.queuedLevelUps.push({
+      upgradeChoices: shuffle(this.player.initialUpgrades()).slice(0, 3),
+      timeAcquired: this.time.now - 600,
+    });
+
+    this.killCountText = this.add
+      .text(parseInt(this.game.config.width.toString()) - 48, 24, "0")
+      .setScrollFactor(0)
+      .setDepth(RenderDepth.UI);
+    this.killCountText.setShadow(2, 2, "#000000", 2);
 
     const spawnCircle = new Phaser.Geom.Circle(512, 384, 800);
     const points = spawnCircle.getPoints(8);
@@ -87,53 +93,10 @@ export class Game extends Scene {
       }
     );
 
-    this.time.delayedCall(1000, this.spawnEnemy, [], this);
+    this.enemyManager = createEnemyManager(this);
+    this.enemyManager.queueEnemySpawn();
 
     EventBus.emit("current-scene-ready", this);
-  }
-
-  spawnEnemy() {
-    const boundLines = [
-      this.physics.world.bounds.getLineA(),
-      this.physics.world.bounds.getLineB(),
-      this.physics.world.bounds.getLineC(),
-      this.physics.world.bounds.getLineD(),
-    ];
-    const randomLine = Phaser.Math.RND.pick(boundLines);
-    const randomPoint = randomLine.getRandomPoint();
-
-    const seed = Phaser.Math.RND.integerInRange(0, 100);
-    const enemies: Enemy[] = [];
-    if (seed > 90) {
-      enemies.push(new FastBoy(this, randomPoint.x, randomPoint.y));
-    } else if (seed > 80) {
-      enemies.push(new StrongBoy(this, randomPoint.x, randomPoint.y));
-    } else if (seed > 77) {
-      enemies.push(new HugeBoy(this, randomPoint.x, randomPoint.y));
-    } else {
-      const count = Phaser.Math.RND.integerInRange(1, 10);
-      for (let i = 0; i < count; i++) {
-        const positionOffset = new Phaser.Math.Vector2(
-          Phaser.Math.RND.integerInRange(-10, 10),
-          Phaser.Math.RND.integerInRange(-10, 10)
-        );
-        enemies.push(
-          new Enemy(
-            this,
-            randomPoint.x + positionOffset.x,
-            randomPoint.y + positionOffset.y
-          )
-        );
-      }
-    }
-
-    enemies.forEach((e) => this.enemies.add(e));
-    this.time.delayedCall(
-      Math.max(1000 - this.player.level * 10, 150),
-      this.spawnEnemy,
-      [],
-      this
-    );
   }
 
   pickupExperience() {
@@ -190,6 +153,10 @@ export class Game extends Scene {
     );
   }
 
+  drawKillCount() {
+    this.killCountText.setText(this.player.killCount.toString());
+  }
+
   update(time: number, delta: number) {
     if (!this.player) return;
 
@@ -199,9 +166,12 @@ export class Game extends Scene {
       enemy.update();
     });
 
+    this.enemyManager.update(time, delta);
+
     this.pickupExperience();
     this.moveExperienceOrbs();
     this.drawExperienceBar();
+    this.drawKillCount();
 
     this.minimap.update();
   }

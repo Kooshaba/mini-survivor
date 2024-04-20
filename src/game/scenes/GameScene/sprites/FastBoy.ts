@@ -7,9 +7,9 @@ export class FastBoy extends Enemy {
     this.baseSpeed = 130;
     this.speed = 130;
     this.baseTint = 0x00ff00;
-    this.health = 200;
-    this.totalHealth = 200;
-    this.xp = 5;
+    this.health = 75;
+    this.totalHealth = 75;
+    this.xp = 10;
     this.xpDropChance = 1;
 
     this.setTint(0x00ff00);

@@ -4,7 +4,7 @@ import { Weapon } from "./Weapon";
 
 export class Knife extends Weapon {
   damage = 12;
-  fireRate = 900;
+  fireRate = 1200;
   count = 3;
   speed = 800;
   pierce = 1;
@@ -67,6 +67,7 @@ export class Knife extends Weapon {
 
   onProjectileHit(projectile: Phaser.GameObjects.Sprite, enemy: Enemy) {
     (enemy as Enemy).takeDamage(
+      this,
       projectile.getData("damage"),
       projectile.getCenter(),
       this.knockback

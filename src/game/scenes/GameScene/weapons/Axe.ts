@@ -12,7 +12,7 @@ export class Axe extends Weapon {
 
   constructor(scene: Game) {
     super(scene);
-    this.damage = 8;
+    this.damage = 15;
     this.possibleUpgrades = [];
 
     this.id = "axe";
@@ -68,6 +68,7 @@ export class Axe extends Weapon {
     });
 
     enemy.takeDamage(
+      this,
       this.damage,
       this.scene.player.getCenter(),
       this.knockback

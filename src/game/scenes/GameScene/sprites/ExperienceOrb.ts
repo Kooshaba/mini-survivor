@@ -6,7 +6,6 @@ export class ExperienceOrb extends Phaser.Physics.Arcade.Sprite {
   declare body: Phaser.Physics.Arcade.Body;
   declare scene: Game;
 
-  currentTween: Phaser.Tweens.Tween;
   goTowardsPlayerSpeed: number = 0;
   canPickUp: boolean = false;
   value: number = 1;
@@ -16,15 +15,6 @@ export class ExperienceOrb extends Phaser.Physics.Arcade.Sprite {
     scene.add.existing(this);
     scene.physics.add.existing(this);
     this.body.setCircle(10);
-
-    this.currentTween = this.scene.tweens.add({
-      targets: this,
-      y: this.y - 4,
-      duration: 400,
-      yoyo: true,
-      repeat: -1,
-      ease: "Sine.easeInOut",
-    });
 
     this.setScale(0.6);
     this.setDepth(RenderDepth.BACKGROUND);
@@ -61,7 +51,6 @@ export class ExperienceOrb extends Phaser.Physics.Arcade.Sprite {
   }
 
   onPickup(player: Phaser.Physics.Arcade.Sprite) {
-    this.currentTween.stop();
     this.canPickUp = false;
 
     const playerPosition = player.getCenter();
