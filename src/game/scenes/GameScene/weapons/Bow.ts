@@ -12,7 +12,7 @@ export class Bow extends Weapon {
   minRange = 600;
   fireRate = 1000;
   damage = 80;
-  knockback = 2;
+  knockback = 0;
 
   constructor(scene: Game) {
     super(scene);
@@ -104,7 +104,7 @@ export class Bow extends Weapon {
       name: "Bow: Fire Rate",
       description: "Increases the fire rate of the bow",
       execute: () => {
-        this.fireRate -= 25;
+        this.fireRate -= 75;
         this.unequip();
         this.equip();
       },
@@ -116,7 +116,7 @@ export class Bow extends Weapon {
       name: "Bow: Damage",
       description: "Increases the damage of the bow",
       execute: () => {
-        this.damage += 4;
+        this.damage += 8;
       },
     };
   }

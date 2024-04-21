@@ -95,5 +95,15 @@ export class Axe extends Weapon {
       canAppear: () => this.axes.length < 3,
     };
   }
+
+  rotationSpeedUpgrade() {
+    return {
+      name: "Axe: Rotation Speed",
+      description: "Increase rotation speed by 0.005",
+      execute: () => {
+        this.rotationSpeed += 0.005;
+      },
+    };
+  }
 }
 

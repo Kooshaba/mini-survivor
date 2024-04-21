@@ -8,7 +8,7 @@ export class Knife extends Weapon {
   count = 3;
   speed = 800;
   pierce = 1;
-  knockback = 2;
+  knockback = 0;
 
   constructor(scene: Game) {
     super(scene);

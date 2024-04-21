@@ -4,7 +4,7 @@ import { RenderDepth } from "../types";
 import { Weapon } from "./Weapon";
 
 export class Sickle extends Weapon {
-  knockback = 15;
+  knockback = 5;
   fireRate = 2_000;
 
   constructor(scene: Game) {
