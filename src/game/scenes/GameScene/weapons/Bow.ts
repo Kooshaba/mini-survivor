@@ -15,6 +15,8 @@ export class Bow extends Weapon {
   knockback = 0;
   pierce = 3;
 
+  lastFiredAt = 0;
+
   constructor(scene: Game) {
     super(scene);
     this.setTexture("bow");
@@ -30,6 +32,7 @@ export class Bow extends Weapon {
   fire() {
     if (this.closestEnemy === null) return;
     this.createProjectile();
+    this.lastFiredAt = this.scene.time.now;
   }
 
   createProjectile() {
@@ -98,9 +101,19 @@ export class Bow extends Weapon {
     );
     this.setRotation(angle);
 
+    const timeSinceLastFire = this.scene.time.now - this.lastFiredAt;
+    let bowRecoilOffset = 0;
+    if (timeSinceLastFire >= 150) {
+      bowRecoilOffset = 0;
+    } else {
+      const progress = timeSinceLastFire / 150;
+      const easedProgress = Phaser.Math.Easing.Bounce.InOut(progress);
+      bowRecoilOffset = 10 - Math.min(easedProgress * 10, 10);
+    }
+
     this.setPosition(
-      this.scene.player.x + Math.cos(angle) * 20,
-      this.scene.player.y + Math.sin(angle) * 20
+      this.scene.player.x + Math.cos(angle) * (20 - bowRecoilOffset),
+      this.scene.player.y + Math.sin(angle) * (20 - bowRecoilOffset)
     );
   }
 
@@ -109,7 +122,7 @@ export class Bow extends Weapon {
       name: "Bow: Fire Rate",
       description: "Increases the fire rate of the bow",
       execute: () => {
-        this.fireRate -= 75;
+        this.fireRate -= 100;
         this.unequip();
         this.equip();
       },
