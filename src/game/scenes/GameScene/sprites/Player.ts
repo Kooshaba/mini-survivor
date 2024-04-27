@@ -46,10 +46,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   lastDirection: Phaser.Math.Vector2 = new Phaser.Math.Vector2(1, 0);
 
   constructor(scene: Game, x: number, y: number) {
-    super(scene, x, y, "wizard-idle");
+    super(scene, x, y, "");
     scene.add.existing(this);
     scene.physics.add.existing(this);
-    this.play("wizard-idle");
+    this.play("rogue-idle");
     this.body.setCircle(10);
     this.body.setOffset(6, 10);
     this.body.setDirectControl(true);

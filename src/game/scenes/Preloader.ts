@@ -25,6 +25,10 @@ export class Preloader extends Scene {
       frameWidth: 32, // Width of each frame in pixels
       frameHeight: 32, // Height of each frame in pixels
     });
+    this.load.spritesheet("rogue-idle", "rogue/idle.png", {
+      frameWidth: 32, // Width of each frame in pixels
+      frameHeight: 32, // Height of each frame in pixels
+    });
 
     this.load.spritesheet("skeleton-idle", "skeleton/idle.png", {
       frameWidth: 32,
@@ -53,6 +57,13 @@ export class Preloader extends Scene {
     this.anims.create({
       key: "wizard-idle",
       frames: this.anims.generateFrameNumbers("wizard-idle"),
+      frameRate: 10,
+      repeat: -1, // Set to -1 for infinite looping
+    });
+
+    this.anims.create({
+      key: "rogue-idle",
+      frames: this.anims.generateFrameNumbers("rogue-idle"),
       frameRate: 10,
       repeat: -1, // Set to -1 for infinite looping
     });
