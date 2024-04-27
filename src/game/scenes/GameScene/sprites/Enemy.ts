@@ -41,6 +41,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     originPosition: Phaser.Math.Vector2,
     knockback: number
   ) {
+    if (this.health <= 0) return;
     weapon.totalDamageDealt += damage;
 
     this.speed = 20;
@@ -71,6 +72,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.health -= damage;
     if (this.health <= 0) {
       this.health = 0;
+      this.onDeath();
     }
 
     if (!this.glowSprite) {
@@ -117,9 +119,6 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
           onComplete: () => {
             this.glowSprite?.destroy();
             this.glowSprite = null;
-            if (this.health <= 0) {
-              this.onDeath();
-            }
           },
         });
       }
@@ -128,6 +127,13 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
   onDeath() {
     if (!this.scene) return;
+
+    this.speed = 0;
+    this.baseSpeed = 0;
+    this.body.destroy();
+    this.play("skeleton-death");
+    this.on("animationcomplete", () => this.destroy());
+
     const dropSeed = Phaser.Math.RND.realInRange(0, 1);
     if (dropSeed <= this.xpDropChance) {
       const orb = new ExperienceOrb(this.scene, this.x, this.y, this.xp);
@@ -143,7 +149,6 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.scene.player.incrementKillCount();
 
     this.healthBar?.destroy();
-    this.destroy();
   }
 
   drawHealthBar() {

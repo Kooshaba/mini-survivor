@@ -60,7 +60,7 @@ export class Axe extends Weapon {
 
     hitEnemies.push(enemy.getData("id"));
     p.setData("hitEnemies", hitEnemies);
-    this.scene.time.delayedCall(500, () => {
+    this.scene.time.delayedCall(1_000, () => {
       const hitEnemies = p.getData("hitEnemies") as Enemy[];
       const index = hitEnemies.findIndex((e) => e === enemy.getData("id"));
       hitEnemies.splice(index, 1);
@@ -80,7 +80,7 @@ export class Axe extends Weapon {
       name: "Axe: Damage",
       description: "Increase damage by 5",
       execute: () => {
-        this.damage += 5;
+        this.damage += 1.5;
       },
     };
   }

@@ -10,9 +10,10 @@ export class Bow extends Weapon {
   rotationSpeed = 0.08;
   closestEnemy: Enemy | null = null;
   minRange = 600;
-  fireRate = 1000;
+  fireRate = 1_500;
   damage = 80;
   knockback = 0;
+  pierce = 3;
 
   constructor(scene: Game) {
     super(scene);
@@ -47,6 +48,8 @@ export class Bow extends Weapon {
     arrow.setData("hitEnemies", []);
     arrow.setData("fromWeapon", this);
 
+    this.scene.time.delayedCall(5_000, () => arrow.destroy());
+
     this.scene.projectiles.add(arrow);
   }
 
@@ -55,9 +58,11 @@ export class Bow extends Weapon {
 
     if (hitEnemies.find((e) => e === enemy.getData("id"))) return;
     hitEnemies.push(enemy.getData("id"));
-
     enemy.takeDamage(this, this.damage, p.getCenter(), this.knockback);
-    p.destroy();
+
+    if (hitEnemies.length >= this.pierce) {
+      p.destroy();
+    }
   }
 
   update(time: number, delta: number) {

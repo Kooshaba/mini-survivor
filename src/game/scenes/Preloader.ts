@@ -25,9 +25,14 @@ export class Preloader extends Scene {
       frameWidth: 32, // Width of each frame in pixels
       frameHeight: 32, // Height of each frame in pixels
     });
+
     this.load.spritesheet("skeleton-idle", "skeleton/idle.png", {
       frameWidth: 32,
       frameHeight: 32,
+    });
+    this.load.spritesheet("skeleton-death", "skeleton/death.png", {
+      frameWidth: 64,
+      frameHeight: 48,
     });
 
     this.load.image("ground", "tiles/ground.png");
@@ -58,6 +63,13 @@ export class Preloader extends Scene {
       frames: this.anims.generateFrameNumbers("skeleton-idle"),
       frameRate: 10,
       repeat: -1,
+    });
+
+    this.anims.create({
+      key: "skeleton-death",
+      frames: this.anims.generateFrameNumbers("skeleton-death"),
+      frameRate: 10,
+      repeat: 0,
     });
 
     //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
