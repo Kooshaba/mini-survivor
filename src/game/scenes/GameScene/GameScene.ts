@@ -70,7 +70,7 @@ export class Game extends Scene {
     this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
     this.player.setCollideWorldBounds(true);
 
-    this.physics.add.collider(this.player, this.enemies, (_p, _e) => {
+    this.physics.add.overlap(this.player, this.enemies, (_p, _e) => {
       const player = _p as Player;
       const enemy = _e as Enemy;
 
