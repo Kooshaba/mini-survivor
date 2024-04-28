@@ -166,6 +166,8 @@ export class Game extends Scene {
       enemy.update();
     });
 
+    this.projectiles.getChildren().forEach((p) => p.update());
+
     this.enemyManager.update(time, delta);
 
     this.pickupExperience();

@@ -1,12 +1,14 @@
 import { Game } from "..";
+import { createTrailPainter } from "../createTrailPainter";
 import { Enemy } from "../sprites/Enemy";
 import { Weapon } from "./Weapon";
 
 export class Knife extends Weapon {
-  damage = 12;
-  fireRate = 1200;
-  count = 3;
-  speed = 800;
+  id = "knife";
+  damage = 10;
+  fireRate = 1_000;
+  count = 2;
+  speed = 600;
   pierce = 1;
   knockback = 0;
 
@@ -19,7 +21,6 @@ export class Knife extends Weapon {
       this.fireRateUpgrade(),
       this.pierceUpgrade(),
     ];
-    this.id = "knife";
   }
 
   fire() {
@@ -53,6 +54,9 @@ export class Knife extends Weapon {
     knife.setData("pierce", this.pierce);
     knife.setData("fromWeapon", this);
     knife.setData("alreadyHit", []);
+
+    const trailPainter = createTrailPainter(knife);
+    knife.update = trailPainter.onUpdate;
 
     const angle = baseAngle + index * (Math.PI / 100);
     knife.setRotation(angle + Math.PI / 2);

@@ -1,4 +1,5 @@
 import { Game } from "..";
+import { createTrailPainter } from "../createTrailPainter";
 import { Enemy } from "../sprites/Enemy";
 import { RenderDepth } from "../types";
 import { Weapon } from "./Weapon";
@@ -38,6 +39,9 @@ export class Sickle extends Weapon {
     sickle.setData("fromWeapon", this);
     sickle.setPosition(player.x, player.y - 40);
     this.scene.projectiles.add(sickle);
+
+    const trailPainter = createTrailPainter(sickle);
+    sickle.update = () => trailPainter.onUpdate();
 
     this.scene.add.tween({
       targets: sickle,
