@@ -1,4 +1,5 @@
 import { Game } from "../GameScene";
+import { createTrailPainter } from "../createTrailPainter";
 import { RenderDepth } from "../types";
 import { Axe } from "../weapons/Axe";
 import { Bow } from "../weapons/Bow";
@@ -25,6 +26,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   immune: boolean = false;
 
   killCount = 0;
+
+  trailPainter: ReturnType<typeof createTrailPainter>;
 
   queuedLevelUps: {
     upgradeChoices: Upgrade[];
@@ -70,6 +73,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         });
       },
     });
+
+    this.trailPainter = createTrailPainter(this);
   }
 
   initialUpgrades() {
@@ -90,28 +95,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.drawHealthBar();
     }
 
-    const graphics = this.scene.add.graphics();
-    const circle = new Phaser.Geom.Circle(this.x, this.y, 1);
-
-    const endRadius = Math.min(10 + amount * 3, 60);
-    this.scene.tweens.add({
-      targets: circle,
-      radius: endRadius,
-      duration: 300,
-      onUpdate: (tween) => {
-        const progress = tween.progress;
-
-        circle.setTo(this.x, this.y, progress * endRadius);
-
-        graphics.clear();
-        graphics.fillStyle(0x00ff00, 1);
-        graphics.fillCircleShape(circle);
-        graphics.setAlpha(1 - progress);
-      },
-      onComplete: () => {
-        graphics.destroy();
-      },
-    });
+    const effectRadius = Math.min(10 + amount * 3, 60);
+    this.drawXpCircleEffect(effectRadius, 0x00ff00);
   }
 
   takeDamage(damage: number) {
@@ -141,9 +126,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  // TODO queue a bunch of level up events
-  // so the player can level many times from picking up a single orb
-  // right now it cuts it off
   levelUp() {
     this.level++;
     this.experience -= this.xpToNextLevel;
@@ -249,41 +231,41 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       w.timeEquipped += delta;
     });
     this.checkLevelUps();
+    this.trailPainter.onUpdate();
   }
 
   move(delta: number) {
     if (!this.scene.input.keyboard) return;
+    let moveVector = new Phaser.Math.Vector2(0, 0);
 
     // Move the player left or right
     if (this.scene.input.keyboard.addKey("A").isDown) {
-      this.body.setVelocityX(-1);
+      moveVector.set(-1, 0);
       this.setFlipX(true);
     } else if (this.scene.input.keyboard.addKey("D").isDown) {
-      this.body.setVelocityX(1);
+      moveVector.set(1, 0);
       this.setFlipX(false);
     } else {
-      this.body.setVelocityX(0);
+      moveVector.set(0, 0);
     }
 
     // Move the player up or down
     if (this.scene.input.keyboard.addKey("W").isDown) {
-      this.body.setVelocityY(-1);
+      moveVector.set(moveVector.x, -1);
     } else if (this.scene.input.keyboard.addKey("S").isDown) {
-      this.body.setVelocityY(1);
+      moveVector.set(moveVector.x, 1);
     } else {
-      this.body.setVelocityY(0);
+      moveVector.set(moveVector.x, 0);
     }
 
-    const moveVector = new Phaser.Math.Vector2(
-      this.body.velocity.x,
-      this.body.velocity.y
-    )
-      .normalize()
-      .scale(this.moveSpeed * (delta / 1000));
-    this.setPosition(this.x + moveVector.x, this.y + moveVector.y);
+    moveVector = moveVector.normalize().scale(this.moveSpeed * (delta / 1000));
+    this.setPosition(
+      Math.round(this.x + moveVector.x),
+      Math.round(this.y + moveVector.y)
+    );
 
-    if (this.body.velocity.length() > 0) {
-      this.lastDirection = this.body.velocity.clone().normalize();
+    if (moveVector.length() > 0) {
+      this.lastDirection = moveVector.clone().normalize();
     }
   }
 
