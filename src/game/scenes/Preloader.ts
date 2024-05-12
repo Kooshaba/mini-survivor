@@ -48,6 +48,12 @@ export class Preloader extends Scene {
     this.load.image("bow", "weapons/bow.png");
     this.load.image("sickle", "weapons/sickle.png");
     this.load.image("experience-orb", "orb.png");
+
+    this.load.bitmapFont(
+      "satoshi",
+      "satoshi/satoshi.png",
+      "satoshi/satoshi.xml"
+    );
   }
 
   create() {

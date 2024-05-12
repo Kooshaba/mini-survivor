@@ -1,9 +1,10 @@
 import { GameObjects, Scene } from "phaser";
 
 import { EventBus } from "../EventBus";
+import { RenderDepth } from "./GameScene/types";
 
 export class MainMenu extends Scene {
-  title: GameObjects.Text;
+  title: GameObjects.BitmapText;
 
   constructor() {
     super("MainMenu");
@@ -11,28 +12,14 @@ export class MainMenu extends Scene {
 
   create() {
     this.title = this.add
-      .text(512, 240, "Survivor", {
-        fontFamily: "Arial Black",
-        fontSize: 38,
-        color: "#ffffff",
-        stroke: "#000000",
-        strokeThickness: 8,
-        align: "center",
-      })
+      .bitmapText(512, 240, "satoshi", "Mini Survivor")
       .setOrigin(0.5)
-      .setDepth(100);
+      .setDepth(RenderDepth.UI);
 
     this.add
-      .text(512, 340, "Click Anywhere to Start", {
-        fontFamily: "Arial Black",
-        fontSize: 16,
-        color: "#ffffff",
-        stroke: "#000000",
-        strokeThickness: 6,
-        align: "center",
-      })
+      .bitmapText(512, 340, "satoshi", "Click anywhere to start", 18)
       .setOrigin(0.5)
-      .setDepth(100);
+      .setDepth(RenderDepth.UI);
 
     EventBus.emit("current-scene-ready", this);
 

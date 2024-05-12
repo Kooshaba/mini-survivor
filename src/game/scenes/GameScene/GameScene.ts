@@ -21,10 +21,10 @@ export class Game extends Scene {
   experienceOrbs: Phaser.GameObjects.Group;
 
   experienceBar: GameObjects.Graphics;
-  levelText: GameObjects.Text;
+  levelText: GameObjects.BitmapText;
 
   minimap: Minimap;
-  killCountText: Phaser.GameObjects.Text;
+  killCountText: GameObjects.BitmapText;
 
   constructor() {
     super("Game");
@@ -54,10 +54,14 @@ export class Game extends Scene {
     });
 
     this.killCountText = this.add
-      .text(parseInt(this.game.config.width.toString()) - 48, 24, "0")
+      .bitmapText(
+        parseInt(this.game.config.width.toString()) - 48,
+        24,
+        "satoshi",
+        "0"
+      )
       .setScrollFactor(0)
       .setDepth(RenderDepth.UI);
-    this.killCountText.setShadow(2, 2, "#000000", 2);
 
     const spawnCircle = new Phaser.Geom.Circle(512, 384, 800);
     const points = spawnCircle.getPoints(8);
@@ -130,12 +134,15 @@ export class Game extends Scene {
 
   drawExperienceBar() {
     this.levelText?.destroy();
-    this.levelText = this.add.text(512, 718, `${this.player.level}`, {
-      fontSize: "20px",
-      color: "#ffffff",
-    });
+    this.levelText = this.add.bitmapText(
+      512,
+      718,
+      "satoshi",
+      `${this.player.level}`
+    );
     this.levelText.setOrigin(0.5);
     this.levelText.setScrollFactor(0);
+    this.levelText.setDepth(RenderDepth.UI);
 
     this.experienceBar?.destroy();
     this.experienceBar = this.add.graphics();
@@ -155,6 +162,11 @@ export class Game extends Scene {
 
   drawKillCount() {
     this.killCountText.setText(this.player.killCount.toString());
+    this.killCountText.setX(
+      parseInt(this.game.config.width.toString()) -
+        48 -
+        this.killCountText.width / 2
+    );
   }
 
   update(time: number, delta: number) {
