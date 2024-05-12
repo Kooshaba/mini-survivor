@@ -5,6 +5,7 @@ import { Bow } from "../weapons/Bow";
 import { Knife } from "../weapons/Knife";
 import { Sickle } from "../weapons/Sickle";
 import { Upgrade, Weapon } from "../weapons/Weapon";
+import { Enemy } from "./Enemy";
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
   declare body: Phaser.Physics.Arcade.Body;
@@ -148,6 +149,21 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.experience -= this.xpToNextLevel;
     this.xpToNextLevel = this.level * 20 + Math.ceil(Math.log2(this.level) * 3);
 
+    this.drawXpCircleEffect(300, 0xffffff);
+    // Knockback nearby enemies
+    this.scene.enemies.getChildren().forEach((_enemy) => {
+      const enemy = _enemy as Enemy;
+      const distance = Phaser.Math.Distance.Between(
+        this.x,
+        this.y,
+        enemy.x,
+        enemy.y
+      );
+      if (distance <= 300) {
+        enemy.knockback(50, this.getCenter());
+      }
+    });
+
     let possibleUpgrades = this.weapons.map((w) => w.possibleUpgrades).flat();
     possibleUpgrades.push(...this.possibleUpgrades);
     possibleUpgrades = possibleUpgrades.filter((u) =>
@@ -161,6 +177,30 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.queuedLevelUps.push({
       upgradeChoices,
       timeAcquired: this.scene.time.now,
+    });
+  }
+
+  drawXpCircleEffect(endRadius: number, color: number) {
+    const graphics = this.scene.add.graphics();
+    const circle = new Phaser.Geom.Circle(this.x, this.y, 1);
+
+    this.scene.tweens.add({
+      targets: circle,
+      radius: endRadius,
+      duration: 300,
+      onUpdate: (tween) => {
+        const progress = tween.progress;
+
+        circle.setTo(this.x, this.y, progress * endRadius);
+
+        graphics.clear();
+        graphics.fillStyle(color, 1);
+        graphics.fillCircleShape(circle);
+        graphics.setAlpha(1 - progress);
+      },
+      onComplete: () => {
+        graphics.destroy();
+      },
     });
   }
 

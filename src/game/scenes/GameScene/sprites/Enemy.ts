@@ -77,22 +77,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
     if (!this.glowSprite) {
       if (knockback > 0) {
-        this.setDirectControl(true);
-        const knockbackAngle = Phaser.Math.Angle.BetweenPoints(
-          originPosition,
-          this
-        );
-        this.scene.tweens.add({
-          targets: this,
-          duration: 150,
-          x: this.x + Math.cos(knockbackAngle) * knockback,
-          y: this.y + Math.sin(knockbackAngle) * knockback,
-          onComplete: () => {
-            if (this) {
-              this.setDirectControl(false);
-            }
-          },
-        });
+        this.knockback(knockback, originPosition);
       }
 
       this.glowSprite = this.scene.add.sprite(this.x, this.y, "");
@@ -123,6 +108,24 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         });
       }
     }
+  }
+
+  knockback(strength: number, origin: Phaser.Math.Vector2) {
+    if (!this.body) return;
+
+    this.setDirectControl(true);
+    const knockbackAngle = Phaser.Math.Angle.BetweenPoints(origin, this);
+    this.scene.tweens.add({
+      targets: this,
+      duration: 150,
+      x: this.x + Math.cos(knockbackAngle) * strength,
+      y: this.y + Math.sin(knockbackAngle) * strength,
+      onComplete: () => {
+        if (this && this.body) {
+          this.setDirectControl(false);
+        }
+      },
+    });
   }
 
   onDeath() {
