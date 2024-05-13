@@ -57,7 +57,7 @@ export class Game extends Scene {
       .bitmapText(
         parseInt(this.game.config.width.toString()) - 48,
         24,
-        "satoshi",
+        "satoshi-14",
         "0"
       )
       .setScrollFactor(0)
@@ -69,9 +69,8 @@ export class Game extends Scene {
       this.enemies.add(new Enemy(this, point.x, point.y));
     });
 
-    this.minimap = new Minimap(this);
-
     this.cameras.main.startFollow(this.player, true, 0.05, 0.05);
+    // this.cameras.main.setZoom(2);
     this.player.setCollideWorldBounds(true);
 
     this.physics.add.overlap(this.player, this.enemies, (_p, _e) => {
@@ -160,13 +159,25 @@ export class Game extends Scene {
     );
   }
 
-  drawKillCount() {
+  updateKillCount() {
     this.killCountText.setText(this.player.killCount.toString());
     this.killCountText.setX(
       parseInt(this.game.config.width.toString()) -
         48 -
         this.killCountText.width / 2
     );
+
+    if (!this.tweens.isTweening(this.killCountText)) {
+      // Create a shake effect
+      this.tweens.add({
+        targets: this.killCountText,
+        y: "-=5",
+        yoyo: true,
+        duration: 50,
+        ease: "Power1",
+        repeat: 1,
+      });
+    }
   }
 
   update(time: number, delta: number) {
@@ -185,9 +196,6 @@ export class Game extends Scene {
     this.pickupExperience();
     this.moveExperienceOrbs();
     this.drawExperienceBar();
-    this.drawKillCount();
-
-    this.minimap.update();
   }
 }
 

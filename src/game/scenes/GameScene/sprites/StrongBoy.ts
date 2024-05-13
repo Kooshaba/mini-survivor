@@ -3,7 +3,7 @@ import { Enemy } from "./Enemy";
 
 export class StrongBoy extends Enemy {
   constructor(scene: Game, x: number, y: number) {
-    super(scene, x, y);
+    super(scene, x, y, "efreet");
     this.baseSpeed = 50;
     this.speed = 50;
     this.baseTint = 0xffa500;
@@ -12,8 +12,7 @@ export class StrongBoy extends Enemy {
     this.xp = 10;
     this.xpDropChance = 1;
 
-    this.setTint(0xffa500);
-    this.setScale(1.5);
+    this.setScale(3);
   }
 }
 

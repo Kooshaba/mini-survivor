@@ -53,9 +53,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     super(scene, x, y, "");
     scene.add.existing(this);
     scene.physics.add.existing(this);
-    this.play("rogue-idle");
+    this.play("hunter-idle");
+    this.setScale(2);
     this.body.setCircle(10);
-    this.body.setOffset(6, 10);
+    this.body.setOffset(-2);
     this.body.setDirectControl(true);
     this.setDepth(RenderDepth.PLAYER);
 
@@ -214,12 +215,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.healthBar?.destroy();
     this.healthBar = this.scene.add.graphics();
     this.healthBar.fillStyle(0x00ff00, 1);
-    this.healthBar.fillRect(
-      24,
-      224,
-      160 * (this.health / this.totalHealth),
-      16
-    );
+    this.healthBar.fillRect(24, 24, 160 * (this.health / this.totalHealth), 16);
     this.healthBar.setDepth(RenderDepth.UI);
     this.healthBar.setScrollFactor(0);
   }
@@ -265,12 +261,18 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     );
 
     if (moveVector.length() > 0) {
+      if (this.anims.currentAnim?.key !== "hunter-walk")
+        this.play("hunter-walk");
       this.lastDirection = moveVector.clone().normalize();
+    } else {
+      if (this.anims.currentAnim?.key !== "hunter-idle")
+        this.play("hunter-idle");
     }
   }
 
   incrementKillCount() {
     this.killCount++;
+    this.scene.updateKillCount();
   }
 
   moveSpeedUpgrade() {

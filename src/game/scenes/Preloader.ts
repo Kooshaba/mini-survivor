@@ -1,5 +1,78 @@
 import { Scene } from "phaser";
 
+const CREATURES = {
+  castle: [
+    "angel",
+    "archer",
+    "cavalier",
+    "griffin",
+    "monk",
+    "paladin",
+    "peasant",
+    "pikeman",
+    "swordsman",
+  ],
+  "dark bastion": [
+    "demon",
+    "devil",
+    "efreet",
+    "gog",
+    "hell hound",
+    "imp",
+    "pit fiend",
+  ],
+  elementals: [
+    "diamond elemental",
+    "fire elemental",
+    "ice elemental",
+    "magic elemental",
+    "magma elemental",
+    "mind elemental",
+    "stone elemental",
+    "storm elemental",
+    "water elemental",
+    "wind elemental",
+  ],
+  "great elf": ["deer", "druid", "dwarf", "hunter", "pixie", "satyr", "treant"],
+  necropolis: [
+    "death knight",
+    "ghost",
+    "lich",
+    "skeleton",
+    "spider",
+    "vampire",
+    "zombie",
+  ],
+  stronghold: [
+    "centaur",
+    "cyclop",
+    "goblin",
+    "harpy",
+    "shaman",
+    "troll",
+    "wolf rider",
+  ],
+  wizards: [
+    "djinn",
+    "gargoyle",
+    "golem",
+    "gremlin",
+    "lion",
+    "mage",
+    "naga",
+    "titan",
+  ],
+};
+
+const ANIMATIONS = [
+  "idle",
+  "walk",
+  "attack",
+  "damage-taken",
+  "death",
+  "special",
+];
+
 export class Preloader extends Scene {
   constructor() {
     super("Preloader");
@@ -21,23 +94,21 @@ export class Preloader extends Scene {
 
   preload() {
     this.load.setPath("assets");
-    this.load.spritesheet("wizard-idle", "wizard/idle.png", {
-      frameWidth: 32, // Width of each frame in pixels
-      frameHeight: 32, // Height of each frame in pixels
-    });
-    this.load.spritesheet("rogue-idle", "rogue/idle.png", {
-      frameWidth: 32, // Width of each frame in pixels
-      frameHeight: 32, // Height of each frame in pixels
-    });
 
-    this.load.spritesheet("skeleton-idle", "skeleton/idle.png", {
-      frameWidth: 32,
-      frameHeight: 32,
-    });
-    this.load.spritesheet("skeleton-death", "skeleton/death.png", {
-      frameWidth: 64,
-      frameHeight: 48,
-    });
+    for (const [category, names] of Object.entries(CREATURES)) {
+      for (const name of names) {
+        const pathName = `creatures/${category}/${name}/sprite_sheet_${name.replace(
+          / /g,
+          "_"
+        )}_0_16x16.png`;
+        console.log(`loading ${pathName}`);
+
+        this.load.spritesheet(name, pathName, {
+          frameWidth: 16,
+          frameHeight: 16,
+        });
+      }
+    }
 
     this.load.image("ground", "tiles/ground.png");
     this.load.tilemapTiledJSON("world", "tiles/world.tmj");
@@ -54,40 +125,37 @@ export class Preloader extends Scene {
       "satoshi/satoshi.png",
       "satoshi/satoshi.xml"
     );
+
+    this.load.bitmapFont(
+      "satoshi-8",
+      "satoshi-8/satoshi-8.png",
+      "satoshi-8/satoshi-8.xml"
+    );
+
+    this.load.bitmapFont(
+      "satoshi-14",
+      "satoshi-14/satoshi-14.png",
+      "satoshi-14/satoshi-14.xml"
+    );
   }
 
   create() {
-    //  When all the assets have loaded, it's often worth creating global objects here that the rest of the game can use.
-
-    // Create the animation from the "wizard-idle" spritesheet
-    this.anims.create({
-      key: "wizard-idle",
-      frames: this.anims.generateFrameNumbers("wizard-idle"),
-      frameRate: 10,
-      repeat: -1, // Set to -1 for infinite looping
-    });
-
-    this.anims.create({
-      key: "rogue-idle",
-      frames: this.anims.generateFrameNumbers("rogue-idle"),
-      frameRate: 10,
-      repeat: -1, // Set to -1 for infinite looping
-    });
-
-    // Create the animation from the "skeleton-idle" spritesheet
-    this.anims.create({
-      key: "skeleton-idle",
-      frames: this.anims.generateFrameNumbers("skeleton-idle"),
-      frameRate: 10,
-      repeat: -1,
-    });
-
-    this.anims.create({
-      key: "skeleton-death",
-      frames: this.anims.generateFrameNumbers("skeleton-death"),
-      frameRate: 10,
-      repeat: 0,
-    });
+    for (const [, names] of Object.entries(CREATURES)) {
+      for (const name of names) {
+        for (let i = 0; i < ANIMATIONS.length; i++) {
+          const animName = ANIMATIONS[i];
+          this.anims.create({
+            key: `${name}-${animName}`,
+            frames: this.anims.generateFrameNames(name, {
+              start: 4 * i,
+              end: 4 * i + 3,
+            }),
+            frameRate: 7,
+            repeat: animName === "death" ? 0 : -1,
+          });
+        }
+      }
+    }
 
     //  Move to the MainMenu. You could also swap this for a Scene Transition, such as a camera fade.
     this.scene.start("MainMenu");

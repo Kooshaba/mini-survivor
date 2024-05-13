@@ -8,8 +8,8 @@ export class Axe extends Weapon {
   weaponRotation = 0;
   rotationSpeed = 0.015;
   knockback = 0;
-  dmgDelay = 250;
-  damage = 5;
+  dmgDelay = 100;
+  damage = 2.5;
 
   axes: Phaser.Physics.Arcade.Sprite[] = [];
 

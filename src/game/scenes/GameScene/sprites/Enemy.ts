@@ -20,15 +20,20 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
   glowSprite: Phaser.GameObjects.Sprite | null = null;
 
-  constructor(scene: Game, x: number, y: number) {
-    super(scene, x, y, "skeleton-idle");
+  creature: string;
+
+  constructor(scene: Game, x: number, y: number, creature?: string) {
+    super(scene, x, y, ``);
     scene.add.existing(this);
     scene.physics.add.existing(this);
-    this.play("skeleton-idle");
-    this.body.setCircle(10);
+    this.body.setCircle(8);
     this.setData("id", this.generateId());
     this.setDepth(RenderDepth.ENEMY);
-    this.body.setOffset(6, 10);
+    this.body.setOffset(-2);
+    this.setScale(2);
+
+    this.creature = creature ?? "devil";
+    this.play(`${this.creature}-walk`);
   }
 
   generateId() {
@@ -134,7 +139,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.speed = 0;
     this.baseSpeed = 0;
     this.body.destroy();
-    this.play("skeleton-death");
+    this.play(`${this.creature}-death`);
     this.on("animationcomplete", () => this.destroy());
 
     const dropSeed = Phaser.Math.RND.realInRange(0, 1);

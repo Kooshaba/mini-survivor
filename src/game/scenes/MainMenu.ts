@@ -17,7 +17,7 @@ export class MainMenu extends Scene {
       .setDepth(RenderDepth.UI);
 
     this.add
-      .bitmapText(512, 340, "satoshi", "Click anywhere to start", 18)
+      .bitmapText(512, 340, "satoshi-14", "Click anywhere to start")
       .setOrigin(0.5)
       .setDepth(RenderDepth.UI);
 
