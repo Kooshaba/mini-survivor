@@ -26,10 +26,10 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     super(scene, x, y, ``);
     scene.add.existing(this);
     scene.physics.add.existing(this);
-    this.body.setCircle(8);
+    this.body.setCircle(5);
     this.setData("id", this.generateId());
     this.setDepth(RenderDepth.ENEMY);
-    this.body.setOffset(-2);
+    this.body.setOffset(3);
     this.setScale(2);
 
     this.creature = creature ?? "devil";

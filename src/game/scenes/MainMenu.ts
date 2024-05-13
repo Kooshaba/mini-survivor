@@ -2,6 +2,7 @@ import { GameObjects, Scene } from "phaser";
 
 import { EventBus } from "../EventBus";
 import { RenderDepth } from "./GameScene/types";
+import { getGameDimensions } from "../utils";
 
 export class MainMenu extends Scene {
   title: GameObjects.BitmapText;
@@ -12,12 +13,22 @@ export class MainMenu extends Scene {
 
   create() {
     this.title = this.add
-      .bitmapText(512, 240, "satoshi", "Mini Survivor")
+      .bitmapText(
+        getGameDimensions(this.game).width / 2,
+        240,
+        "satoshi",
+        "Mini Survivor"
+      )
       .setOrigin(0.5)
       .setDepth(RenderDepth.UI);
 
     this.add
-      .bitmapText(512, 340, "satoshi-14", "Click anywhere to start")
+      .bitmapText(
+        getGameDimensions(this.game).width / 2,
+        340,
+        "satoshi-14",
+        "Click anywhere to start"
+      )
       .setOrigin(0.5)
       .setDepth(RenderDepth.UI);
 

@@ -8,6 +8,8 @@ import { RenderDepth } from "./types";
 import { Minimap } from "./Minimap";
 import { createEnemyManager } from "./createEnemyManager";
 import { shuffle } from "lodash";
+import { getGameDimensions } from "../../utils";
+import Joystick from "phaser3-rex-plugins/plugins/input/virtualjoystick/VirtualJoyStick";
 
 export class Game extends Scene {
   title: GameObjects.Text;
@@ -25,6 +27,14 @@ export class Game extends Scene {
 
   minimap: Minimap;
   killCountText: GameObjects.BitmapText;
+
+  joystick:
+    | {
+        forceX: number;
+        forceY: number;
+        force: number;
+      }
+    | undefined;
 
   constructor() {
     super("Game");
@@ -100,6 +110,16 @@ export class Game extends Scene {
     this.enemyManager.queueEnemySpawn();
 
     EventBus.emit("current-scene-ready", this);
+
+    this.drawExperienceBar();
+
+    if (this.sys.game.device.input.touch && this.plugins) {
+      this.joystick = new Joystick(this, {
+        x: getGameDimensions(this.game).width / 2,
+        y: getGameDimensions(this.game).height / 2 + 160,
+        radius: 48,
+      });
+    }
   }
 
   pickupExperience() {
@@ -134,8 +154,8 @@ export class Game extends Scene {
   drawExperienceBar() {
     this.levelText?.destroy();
     this.levelText = this.add.bitmapText(
-      512,
-      718,
+      this.getGameWidth() / 2,
+      this.getGameHeight() - 48,
       "satoshi",
       `${this.player.level}`
     );
@@ -148,15 +168,29 @@ export class Game extends Scene {
     this.experienceBar.setDepth(RenderDepth.UI);
     this.experienceBar.setScrollFactor(0);
     this.experienceBar.fillStyle(0xffffff, 1);
-    this.experienceBar.fillRect(0, 748, 1024, 20);
+    this.experienceBar.fillRect(
+      0,
+      this.getGameHeight() - 20,
+      this.getGameWidth(),
+      20
+    );
 
     this.experienceBar.fillStyle(0x00ff00, 1);
     this.experienceBar.fillRect(
       0,
-      748,
-      1024 * (this.player.experience / this.player.xpToNextLevel),
+      this.getGameHeight() - 20,
+      this.getGameWidth() *
+        (this.player.experience / this.player.xpToNextLevel),
       20
     );
+  }
+
+  getGameHeight() {
+    return parseInt(this.game.config.height.toString());
+  }
+
+  getGameWidth() {
+    return parseInt(this.game.config.width.toString());
   }
 
   updateKillCount() {
@@ -195,7 +229,6 @@ export class Game extends Scene {
 
     this.pickupExperience();
     this.moveExperienceOrbs();
-    this.drawExperienceBar();
   }
 }
 

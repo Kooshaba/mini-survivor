@@ -64,14 +64,7 @@ const CREATURES = {
   ],
 };
 
-const ANIMATIONS = [
-  "idle",
-  "walk",
-  "attack",
-  "damage-taken",
-  "death",
-  "special",
-];
+const ANIMATIONS = ["idle", "walk", "attack", "damage-taken", "death"];
 
 export class Preloader extends Scene {
   constructor() {
@@ -101,7 +94,6 @@ export class Preloader extends Scene {
           / /g,
           "_"
         )}_0_16x16.png`;
-        console.log(`loading ${pathName}`);
 
         this.load.spritesheet(name, pathName, {
           frameWidth: 16,

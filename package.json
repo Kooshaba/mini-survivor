@@ -29,6 +29,7 @@
     "@types/node": "^20.12.11",
     "lodash": "^4.17.21",
     "phaser": "^3.80.1",
+    "phaser3-rex-plugins": "^1.80.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "tsx": "^4.10.1"

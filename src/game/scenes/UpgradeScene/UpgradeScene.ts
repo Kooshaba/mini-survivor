@@ -26,21 +26,23 @@ export class UpgradeScene extends Phaser.Scene {
 
   createUpgradeCard(upgrade: Upgrade, i: number) {
     const card = this.add
-      .rectangle(256 + 252 * i, 240, 240, 80, 0x333333)
+      .rectangle(
+        parseInt(this.game.config.width.toString()) / 2 - 80,
+        parseInt(this.game.config.height.toString()) / 2 + (i - 1) * 120,
+        240,
+        80,
+        0x333333
+      )
       .setAlpha(0);
     const text = this.add
-      .text(card.x - 120, card.y - 20, upgrade.name, {
-        fontFamily: "Arial Black",
-        fontSize: 12,
-        color: "#ffffff",
-      })
+      .dynamicBitmapText(card.x - 120, card.y - 20, "satoshi-14", upgrade.name)
       .setAlpha(0);
 
     this.add.tween({
       targets: card,
       alpha: 1,
-      y: 360,
-      ease: "Sine.easeInOut",
+      x: "+=80",
+      ease: "Power1",
       duration: 500,
       delay: 200 * i,
       onComplete: () => {
@@ -58,9 +60,9 @@ export class UpgradeScene extends Phaser.Scene {
     card.on("pointerdown", () => {
       this.tweens.add({
         targets: [card, text],
-        y: card.y - 32,
+        x: "+=32",
         alpha: 0,
-        ease: "Sine.easeInOut",
+        ease: "Power1",
         duration: 500,
         onComplete: () => {
           upgrade.execute();

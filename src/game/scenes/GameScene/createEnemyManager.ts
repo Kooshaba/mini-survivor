@@ -56,7 +56,7 @@ export function createEnemyManager(scene: Game) {
 
   const fastBoySwarm = () => {
     const spawnCircle = getSpawnCircle();
-    const points = spawnCircle.getPoints(16);
+    const points = spawnCircle.getPoints(10);
     const boys = [] as Enemy[];
 
     for (const point of points) {

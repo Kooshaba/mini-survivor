@@ -8,8 +8,8 @@ export class Axe extends Weapon {
   weaponRotation = 0;
   rotationSpeed = 0.015;
   knockback = 0;
-  dmgDelay = 100;
-  damage = 2.5;
+  dmgDelay = 250;
+  damage = 5;
 
   axes: Phaser.Physics.Arcade.Sprite[] = [];
 
@@ -61,7 +61,7 @@ export class Axe extends Weapon {
 
     hitEnemies.push(enemy.getData("id"));
     p.setData("hitEnemies", hitEnemies);
-    this.scene.time.delayedCall(1_000, () => {
+    this.scene.time.delayedCall(this.dmgDelay, () => {
       const hitEnemies = p.getData("hitEnemies") as Enemy[];
       const index = hitEnemies.findIndex((e) => e === enemy.getData("id"));
       hitEnemies.splice(index, 1);

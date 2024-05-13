@@ -55,8 +55,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     scene.physics.add.existing(this);
     this.play("hunter-idle");
     this.setScale(2);
-    this.body.setCircle(10);
-    this.body.setOffset(-2);
+    this.body.setCircle(5);
+    this.body.setOffset(2, 4);
     this.body.setDirectControl(true);
     this.setDepth(RenderDepth.PLAYER);
 
@@ -98,6 +98,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     const effectRadius = Math.min(10 + amount * 3, 60);
     this.drawXpCircleEffect(effectRadius, 0x00ff00);
+    this.scene.drawExperienceBar();
   }
 
   takeDamage(damage: number) {
@@ -231,34 +232,42 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   move(delta: number) {
-    if (!this.scene.input.keyboard) return;
     let moveVector = new Phaser.Math.Vector2(0, 0);
+    let forceModifier = 1;
+    if (this.scene.input.keyboard) {
+      // Move the player left or right
+      if (this.scene.input.keyboard.addKey("A").isDown) {
+        moveVector.set(-1, 0);
+        this.setFlipX(true);
+      } else if (this.scene.input.keyboard.addKey("D").isDown) {
+        moveVector.set(1, 0);
+        this.setFlipX(false);
+      } else {
+        moveVector.set(0, 0);
+      }
 
-    // Move the player left or right
-    if (this.scene.input.keyboard.addKey("A").isDown) {
-      moveVector.set(-1, 0);
-      this.setFlipX(true);
-    } else if (this.scene.input.keyboard.addKey("D").isDown) {
-      moveVector.set(1, 0);
-      this.setFlipX(false);
-    } else {
-      moveVector.set(0, 0);
+      // Move the player up or down
+      if (this.scene.input.keyboard.addKey("W").isDown) {
+        moveVector.set(moveVector.x, -1);
+      } else if (this.scene.input.keyboard.addKey("S").isDown) {
+        moveVector.set(moveVector.x, 1);
+      } else {
+        moveVector.set(moveVector.x, 0);
+      }
     }
 
-    // Move the player up or down
-    if (this.scene.input.keyboard.addKey("W").isDown) {
-      moveVector.set(moveVector.x, -1);
-    } else if (this.scene.input.keyboard.addKey("S").isDown) {
-      moveVector.set(moveVector.x, 1);
-    } else {
-      moveVector.set(moveVector.x, 0);
+    if (this.scene.joystick) {
+      moveVector = new Phaser.Math.Vector2(
+        this.scene.joystick.forceX,
+        this.scene.joystick.forceY
+      );
+      forceModifier = Math.min(this.scene.joystick.force, 100) / 100;
     }
 
-    moveVector = moveVector.normalize().scale(this.moveSpeed * (delta / 1000));
-    this.setPosition(
-      Math.round(this.x + moveVector.x),
-      Math.round(this.y + moveVector.y)
-    );
+    moveVector = moveVector
+      .normalize()
+      .scale(this.moveSpeed * forceModifier * (delta / 1000));
+    this.setPosition(this.x + moveVector.x, this.y + moveVector.y);
 
     if (moveVector.length() > 0) {
       if (this.anims.currentAnim?.key !== "hunter-walk")
@@ -302,6 +311,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       execute: () => {
         this.totalHealth += 10;
         this.health += 10;
+        this.scene.player.drawHealthBar();
       },
     };
   }
