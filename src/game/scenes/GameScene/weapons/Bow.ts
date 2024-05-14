@@ -7,11 +7,11 @@ export class Bow extends Weapon {
   id = "bow";
   weaponRotation = 0;
   targetAngle = 0;
-  rotationSpeed = 0.08;
-  fireRate = 1_500;
-  damage = 35;
+  rotationSpeed = 0.1;
+  fireRate = 2_500;
+  damage = 55;
   knockback = 0;
-  pierce = 3;
+  pierce = 5;
 
   lastFiredAt = 0;
 
@@ -24,7 +24,11 @@ export class Bow extends Weapon {
     this.scene.physics.add.existing(this);
     this.body.setDirectControl(true);
 
-    this.possibleUpgrades = [this.fireRateUpgrade(), this.damageUpgrade()];
+    this.possibleUpgrades = [
+      this.fireRateUpgrade(),
+      this.damageUpgrade(),
+      this.pierceUpgrade(),
+    ];
   }
 
   fire() {
@@ -115,6 +119,16 @@ export class Bow extends Weapon {
       description: "Increases the damage of the bow",
       execute: () => {
         this.damage += 8;
+      },
+    };
+  }
+
+  pierceUpgrade() {
+    return {
+      name: "Bow: Pierce",
+      description: "Increases the damage of the bow",
+      execute: () => {
+        this.pierce += 2;
       },
     };
   }
