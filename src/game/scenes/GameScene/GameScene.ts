@@ -57,7 +57,7 @@ export class Game extends Scene {
     this.projectiles = this.add.group();
     this.experienceOrbs = this.add.group();
 
-    this.player = new Player(this, 512, 384);
+    this.player = new Player(this, 1000, 1000);
     this.player.queuedLevelUps.push({
       upgradeChoices: shuffle(this.player.initialUpgrades()).slice(0, 3),
       timeAcquired: this.time.now - 600,
