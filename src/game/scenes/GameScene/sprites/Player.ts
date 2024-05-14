@@ -21,6 +21,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   pickupRadius = 100;
 
   healthBar: Phaser.GameObjects.Graphics | undefined;
+  healthBarText: Phaser.GameObjects.BitmapText | undefined;
+
   health: number = 100;
   totalHealth: number = 100;
   immune: boolean = false;
@@ -219,6 +221,29 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.healthBar.fillRect(24, 24, 160 * (this.health / this.totalHealth), 16);
     this.healthBar.setDepth(RenderDepth.UI);
     this.healthBar.setScrollFactor(0);
+
+    if (!this.healthBarText) {
+      this.healthBarText = this.scene.add.dynamicBitmapText(
+        24 + 80,
+        29,
+        "satoshi-14",
+        `${this.health}/${this.totalHealth}`
+      );
+      this.healthBarText.setScrollFactor(0);
+      this.healthBarText.setDepth(RenderDepth.UI + 2);
+      this.healthBarText.setOrigin(0.5, 0.5);
+    }
+
+    if (!this.scene.tweens.isTweening(this.healthBarText)) {
+      this.scene.tweens.add({
+        targets: this.healthBarText,
+        y: "-=3",
+        duration: 50,
+        yoyo: true,
+        repeat: 1,
+      });
+    }
+    this.healthBarText.setText(`${this.health}/${this.totalHealth}`);
   }
 
   update(time: number, delta: number): void {
