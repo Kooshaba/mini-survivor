@@ -28,6 +28,9 @@ export class Game extends Scene {
   minimap: Minimap;
   killCountText: GameObjects.BitmapText;
 
+  roundTime = 0;
+  timerText: GameObjects.DynamicBitmapText;
+
   joystick:
     | {
         forceX: number;
@@ -120,6 +123,16 @@ export class Game extends Scene {
         radius: 48,
       });
     }
+
+    const gameDimensions = getGameDimensions(this.game);
+    const bigScreen = gameDimensions.width > 600;
+    const timerX = bigScreen ? gameDimensions.width / 2 : 24;
+    const timerY = bigScreen ? 24 : 48;
+    this.timerText = this.add.dynamicBitmapText(timerX, timerY, "satoshi", "");
+    this.timerText
+      .setOrigin(bigScreen ? 0.5 : 0, 0)
+      .setScrollFactor(0)
+      .setDepth(RenderDepth.UI);
   }
 
   pickupExperience() {
@@ -214,6 +227,20 @@ export class Game extends Scene {
     }
   }
 
+  drawTimerText() {
+    const milliseconds = Math.floor(this.roundTime);
+    let seconds = Math.floor(milliseconds / 1000);
+    let minutes = Math.floor(seconds / 60);
+
+    seconds %= 60;
+    minutes %= 60;
+
+    const secondsStr = seconds.toString().padStart(2, "0");
+    const minutesStr = minutes.toString().padStart(2, "0");
+
+    this.timerText.setText(`${minutesStr}:${secondsStr}`);
+  }
+
   update(time: number, delta: number) {
     if (!this.player) return;
 
@@ -229,6 +256,9 @@ export class Game extends Scene {
 
     this.pickupExperience();
     this.moveExperienceOrbs();
+
+    this.roundTime += delta;
+    this.drawTimerText();
   }
 }
 
