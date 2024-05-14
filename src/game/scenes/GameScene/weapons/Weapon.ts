@@ -52,5 +52,9 @@ export class Weapon extends Phaser.Physics.Arcade.Sprite {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onProjectileHit(_p: Phaser.GameObjects.Sprite, _enemy: Enemy) {}
+
+  get player() {
+    return this.scene.player;
+  }
 }
 

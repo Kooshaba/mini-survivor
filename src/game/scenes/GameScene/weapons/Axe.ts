@@ -7,9 +7,9 @@ export class Axe extends Weapon {
   id = "axe";
   weaponRotation = 0;
   rotationSpeed = 0.015;
-  knockback = 0;
-  dmgDelay = 250;
-  damage = 5;
+  knockback = 5;
+  dmgDelay = 300;
+  damage = 10;
 
   axes: Phaser.Physics.Arcade.Sprite[] = [];
 
@@ -17,7 +17,11 @@ export class Axe extends Weapon {
     super(scene);
 
     this.possibleUpgrades = [];
-    this.possibleUpgrades = [this.damageUpgrade(), this.additionAxeUpgrade()];
+    this.possibleUpgrades = [
+      this.damageUpgrade(),
+      this.additionAxeUpgrade(),
+      this.rotationSpeedUpgrade(),
+    ];
 
     this.createProjectile();
   }
@@ -81,7 +85,7 @@ export class Axe extends Weapon {
       name: "Axe: Damage",
       description: "Increase damage by 5",
       execute: () => {
-        this.damage += 1;
+        this.damage += 2;
       },
     };
   }

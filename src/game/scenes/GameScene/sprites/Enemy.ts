@@ -57,11 +57,12 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     });
 
     const damageText = this.scene.add
-      .text(this.x, this.y, `${damage}`, {
-        fontSize: "10px",
-        color: "#ffffff",
-      })
-      .setShadow(1, 1, "#000000", 1, true, true)
+      .dynamicBitmapText(
+        this.x + Phaser.Math.RND.integerInRange(-4, 4),
+        this.y,
+        "satoshi-8",
+        `${damage}`
+      )
       .setDepth(RenderDepth.UI);
 
     this.scene.tweens.add({

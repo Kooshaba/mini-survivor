@@ -8,10 +8,8 @@ export class Bow extends Weapon {
   weaponRotation = 0;
   targetAngle = 0;
   rotationSpeed = 0.08;
-  closestEnemy: Enemy | null = null;
-  minRange = 600;
   fireRate = 1_500;
-  damage = 80;
+  damage = 35;
   knockback = 0;
   pierce = 3;
 
@@ -21,7 +19,7 @@ export class Bow extends Weapon {
     super(scene);
     this.setTexture("bow");
     this.setDepth(RenderDepth.PROJECTILE);
-    this.setPosition(this.scene.player.x + 40, this.scene.player.y);
+    this.setPosition(this.player.x + 40, this.player.y);
     this.scene.add.existing(this);
     this.scene.physics.add.existing(this);
     this.body.setDirectControl(true);
@@ -30,7 +28,7 @@ export class Bow extends Weapon {
   }
 
   fire() {
-    if (this.closestEnemy === null) return;
+    if (this.player.closestEnemy === null) return;
     this.createProjectile();
     this.lastFiredAt = this.scene.time.now;
   }
@@ -69,29 +67,11 @@ export class Bow extends Weapon {
   }
 
   update(time: number, delta: number) {
-    let closestEnemy: Enemy | null = null;
-    let closestDistance = Number.MAX_VALUE;
-
-    this.scene.enemies.getChildren().forEach((e) => {
-      const enemy = e as Enemy;
-      const distance = Phaser.Math.Distance.BetweenPoints(
-        this.scene.player,
-        enemy
-      );
-      if (distance < this.minRange && distance < closestDistance) {
-        closestDistance = distance;
-        closestEnemy = enemy;
-      }
-    });
-
-    if (closestEnemy) {
+    if (this.player.closestEnemy) {
       this.targetAngle = Phaser.Math.Angle.BetweenPoints(
-        this.scene.player,
-        closestEnemy
+        this.player,
+        this.player.closestEnemy
       );
-      this.closestEnemy = closestEnemy;
-    } else {
-      this.closestEnemy = null;
     }
 
     const angle = Phaser.Math.Angle.RotateTo(
@@ -112,8 +92,8 @@ export class Bow extends Weapon {
     }
 
     this.setPosition(
-      this.scene.player.x + Math.cos(angle) * (20 - bowRecoilOffset),
-      this.scene.player.y + Math.sin(angle) * (20 - bowRecoilOffset)
+      this.player.x + Math.cos(angle) * (20 - bowRecoilOffset),
+      this.player.y + Math.sin(angle) * (20 - bowRecoilOffset)
     );
   }
 

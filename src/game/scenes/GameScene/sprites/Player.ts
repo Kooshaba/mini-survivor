@@ -3,6 +3,7 @@ import { createTrailPainter } from "../createTrailPainter";
 import { RenderDepth } from "../types";
 import { Axe } from "../weapons/Axe";
 import { Bow } from "../weapons/Bow";
+import { Hatchet } from "../weapons/Hatchet";
 import { Knife } from "../weapons/Knife";
 import { Sickle } from "../weapons/Sickle";
 import { Upgrade, Weapon } from "../weapons/Weapon";
@@ -29,6 +30,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
   killCount = 0;
 
+  closestEnemy: Enemy | undefined;
+
   trailPainter: ReturnType<typeof createTrailPainter>;
 
   queuedLevelUps: {
@@ -45,6 +48,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.equipBow(),
     this.equipKnife(),
     this.equipSickle(),
+    this.equipHatchet(),
   ];
 
   weapons: Weapon[] = [];
@@ -86,6 +90,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.equipBow(),
       this.equipKnife(),
       this.equipSickle(),
+      this.equipHatchet(),
     ];
   }
 
@@ -246,6 +251,29 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.healthBarText.setText(`${this.health}/${this.totalHealth}`);
   }
 
+  findClosestEnemy() {
+    let closestEnemy: Enemy | null = null;
+    let closestDistance = Number.MAX_VALUE;
+
+    this.scene.enemies.getChildren().forEach((e) => {
+      const enemy = e as Enemy;
+      const distance = Phaser.Math.Distance.BetweenPoints(
+        this.scene.player,
+        enemy
+      );
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestEnemy = enemy;
+      }
+    });
+
+    if (closestEnemy) {
+      this.closestEnemy = closestEnemy;
+    } else {
+      this.closestEnemy = undefined;
+    }
+  }
+
   update(time: number, delta: number): void {
     this.move(delta);
     this.weapons.map((w) => {
@@ -254,6 +282,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     });
     this.checkLevelUps();
     this.trailPainter.onUpdate();
+    this.findClosestEnemy();
   }
 
   move(delta: number) {
@@ -399,6 +428,19 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       },
       canAppear: () => {
         return !this.weapons.find((w) => w.id === "knife");
+      },
+    };
+  }
+
+  equipHatchet() {
+    return {
+      name: "Gain Hatchet",
+      description: "",
+      execute: () => {
+        new Hatchet(this.scene).equip();
+      },
+      canAppear: () => {
+        return !this.weapons.find((w) => w.id === "hatchet");
       },
     };
   }

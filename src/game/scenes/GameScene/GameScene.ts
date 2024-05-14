@@ -57,7 +57,7 @@ export class Game extends Scene {
     this.projectiles = this.add.group();
     this.experienceOrbs = this.add.group();
 
-    this.player = new Player(this, 1000, 1000);
+    this.player = new Player(this, 2000, 2000);
     this.player.queuedLevelUps.push({
       upgradeChoices: shuffle(this.player.initialUpgrades()).slice(0, 3),
       timeAcquired: this.time.now - 600,
@@ -73,7 +73,7 @@ export class Game extends Scene {
       .setScrollFactor(0)
       .setDepth(RenderDepth.UI);
 
-    const spawnCircle = new Phaser.Geom.Circle(512, 384, 800);
+    const spawnCircle = new Phaser.Geom.Circle(2000, 2000, 800);
     const points = spawnCircle.getPoints(8);
     points.forEach((point) => {
       this.enemies.add(new Enemy(this, point.x, point.y));
