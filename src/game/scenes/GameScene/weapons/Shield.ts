@@ -102,7 +102,7 @@ export class Shield extends Weapon {
 
   pierceUpgrade() {
     return {
-      name: "Shield: Fire Rate",
+      name: "Shield: Pierce",
       description: "Increase damage by 5",
       execute: () => {
         this.pierce += 2;
