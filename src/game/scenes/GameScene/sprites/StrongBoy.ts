@@ -6,7 +6,6 @@ export class StrongBoy extends Enemy {
     super(scene, x, y, "efreet");
     this.baseSpeed = 50;
     this.speed = 50;
-    this.baseTint = 0xffa500;
     this.health = 500;
     this.totalHealth = 500;
     this.xp = 10;

@@ -4,7 +4,7 @@ import { Weapon } from "./Weapon";
 
 export class Hatchet extends Weapon {
   id = "hatchet";
-  damage = 8;
+  damage = 10;
   fireRate = 2_500;
   speed = 500;
   knockback = 5;
@@ -87,7 +87,7 @@ export class Hatchet extends Weapon {
     alreadyHitArray.push(enemyId);
     projectile.setData("alreadyHit", alreadyHitArray);
 
-    this.scene.time.delayedCall(150, () => {
+    this.scene.time.delayedCall(400, () => {
       const alreadyHitArray =
         (projectile.getData("alreadyHit") as string[]) || [];
       projectile.setData(

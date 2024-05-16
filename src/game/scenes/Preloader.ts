@@ -113,6 +113,7 @@ export class Preloader extends Scene {
     this.load.image("bow", "weapons/bow.png");
     this.load.image("hatchet", "weapons/hatchet.png");
     this.load.image("sickle", "weapons/sickle.png");
+    this.load.image("shield", "weapons/shield.png");
     this.load.image("experience-orb", "orb.png");
 
     //ui

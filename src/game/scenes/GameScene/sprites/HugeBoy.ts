@@ -6,10 +6,9 @@ export class HugeBoy extends Enemy {
     super(scene, x, y, "pit fiend");
     this.baseSpeed = 50;
     this.speed = 50;
-    this.baseTint = 0xff0000;
-    this.health = 750;
-    this.totalHealth = 750;
-    this.xp = 250;
+    this.health = 400;
+    this.totalHealth = 400;
+    this.xp = 100;
     this.damage = 10;
     this.xpDropChance = 1;
 

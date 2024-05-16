@@ -36,6 +36,8 @@ export class Weapon extends Phaser.Physics.Arcade.Sprite {
     });
 
     this.scene.player.weapons.push(this);
+
+    this.fire();
   }
 
   unequip() {

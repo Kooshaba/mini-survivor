@@ -5,6 +5,7 @@ import { Axe } from "../weapons/Axe";
 import { Bow } from "../weapons/Bow";
 import { Hatchet } from "../weapons/Hatchet";
 import { Knife } from "../weapons/Knife";
+import { Shield } from "../weapons/Shield";
 import { Sickle } from "../weapons/Sickle";
 import { Upgrade, Weapon } from "../weapons/Weapon";
 import { Enemy } from "./Enemy";
@@ -50,6 +51,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.equipKnife(),
     this.equipSickle(),
     this.equipHatchet(),
+    this.equipShield(),
   ];
 
   weapons: Weapon[] = [];
@@ -92,6 +94,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.equipKnife(),
       this.equipSickle(),
       this.equipHatchet(),
+      this.equipShield(),
     ];
   }
 
@@ -465,6 +468,22 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       canAppear: () => {
         return (
           !this.weapons.find((w) => w.id === "hatchet") &&
+          this.weapons.length < 4
+        );
+      },
+    };
+  }
+
+  equipShield() {
+    return {
+      name: "Gain Shield",
+      description: "",
+      execute: () => {
+        new Shield(this.scene).equip();
+      },
+      canAppear: () => {
+        return (
+          !this.weapons.find((w) => w.id === "shield") &&
           this.weapons.length < 4
         );
       },

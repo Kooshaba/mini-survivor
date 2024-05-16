@@ -9,9 +9,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
   speed = 50;
   baseSpeed = 50;
-  health: number = 40;
-  totalHealth: number = 40;
-  baseTint: number = 0xffffff;
+  health: number = 25;
+  totalHealth: number = 25;
   xpDropChance = 0.5;
   xp: number = 5;
   damage: number = 5;
