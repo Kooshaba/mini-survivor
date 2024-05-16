@@ -1,6 +1,13 @@
 import { Player } from "../GameScene/sprites/Player";
 import { Upgrade } from "../GameScene/weapons/Weapon";
 
+/**
+ * TODO instead of passing upgrade choices, process level ups one by one
+ * need to do this because currently all the level ups are calculated
+ * before any choices are made, and the canAppear function is using the
+ * incorrect state
+ * i.e. you can get the option to gain the same weapon twice in a row
+ */
 export class UpgradeScene extends Phaser.Scene {
   player: Player;
   upgradeChoices: Upgrade[];

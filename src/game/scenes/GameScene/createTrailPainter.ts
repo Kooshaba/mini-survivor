@@ -44,6 +44,7 @@ export function createTrailPainter(sprite: Phaser.GameObjects.Sprite) {
 
   return {
     onUpdate,
+    destroy: () => trailSprites.forEach((s) => s.destroy()),
   };
 }
 

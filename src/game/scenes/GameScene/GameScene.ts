@@ -28,7 +28,7 @@ export class Game extends Scene {
   minimap: Minimap;
   killCountText: GameObjects.BitmapText;
 
-  roundTime = 0;
+  roundTime: number = 0;
   timerText: GameObjects.DynamicBitmapText;
 
   joystick:
@@ -133,6 +133,14 @@ export class Game extends Scene {
       .setOrigin(bigScreen ? 0.5 : 0, 0)
       .setScrollFactor(0)
       .setDepth(RenderDepth.UI);
+    this.roundTime = 0;
+
+    if (this.input.keyboard) {
+      this.input.keyboard.on("keydown-ESC", () => {
+        this.scene.pause("Game");
+        this.scene.launch("SummaryScene", { player: this.player });
+      });
+    }
   }
 
   pickupExperience() {

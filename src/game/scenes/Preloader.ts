@@ -66,6 +66,8 @@ const CREATURES = {
 
 const ANIMATIONS = ["idle", "walk", "attack", "damage-taken", "death"];
 
+const BUTTON_COLORS = ["green"];
+
 export class Preloader extends Scene {
   constructor() {
     super("Preloader");
@@ -112,6 +114,19 @@ export class Preloader extends Scene {
     this.load.image("hatchet", "weapons/hatchet.png");
     this.load.image("sickle", "weapons/sickle.png");
     this.load.image("experience-orb", "orb.png");
+
+    //ui
+    this.load.image("ui-header", "ui/header.png");
+    this.load.image("ui-body", "ui/body.png");
+
+    for (const buttonColor of BUTTON_COLORS) {
+      ["base", "clicked", "hover"].forEach((state) => {
+        this.load.image(
+          `button-${buttonColor}-${state}`,
+          `ui/buttons/${buttonColor}/${state}.png`
+        );
+      });
+    }
 
     this.load.bitmapFont(
       "satoshi",

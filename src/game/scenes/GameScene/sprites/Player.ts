@@ -24,6 +24,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   healthBar: Phaser.GameObjects.Graphics | undefined;
   healthBarText: Phaser.GameObjects.BitmapText | undefined;
 
+  dead: boolean;
   health: number = 100;
   totalHealth: number = 100;
   immune: boolean = false;
@@ -113,9 +114,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.health -= damage;
     this.immune = true;
-    this.scene.time.delayedCall(300, () => {
-      this.immune = false;
-    });
     this.drawHealthBar();
 
     this.scene.cameras.main.shake(100, 0.01);
@@ -131,7 +129,21 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     });
 
     if (this.health <= 0) {
-      this.scene.scene.start("MainMenu");
+      this.immune = true;
+      this.dead = true;
+      this.trailPainter.destroy();
+      this.play("hunter-death");
+      this.on("animationcomplete", () => {
+        this.scene.scene.pause("Game");
+        this.scene.scene.launch("SummaryScene", {
+          player: this,
+          gameOver: true,
+        });
+      });
+    } else {
+      this.scene.time.delayedCall(300, () => {
+        this.immune = false;
+      });
     }
   }
 
@@ -275,6 +287,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   update(time: number, delta: number): void {
+    if (this.dead) return;
+
     this.move(delta);
     this.weapons.map((w) => {
       w.update(time, delta);
@@ -388,7 +402,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         new Bow(this.scene).equip();
       },
       canAppear: () => {
-        return !this.weapons.find((w) => w.id === "bow");
+        return (
+          !this.weapons.find((w) => w.id === "bow") && this.weapons.length < 4
+        );
       },
     };
   }
@@ -401,7 +417,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         new Axe(this.scene).equip();
       },
       canAppear: () => {
-        return !this.weapons.find((w) => w.id === "axe");
+        return (
+          !this.weapons.find((w) => w.id === "axe") && this.weapons.length < 4
+        );
       },
     };
   }
@@ -414,7 +432,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         new Sickle(this.scene).equip();
       },
       canAppear: () => {
-        return !this.weapons.find((w) => w.id === "sickle");
+        return (
+          !this.weapons.find((w) => w.id === "sickle") &&
+          this.weapons.length < 4
+        );
       },
     };
   }
@@ -427,7 +448,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         new Knife(this.scene).equip();
       },
       canAppear: () => {
-        return !this.weapons.find((w) => w.id === "knife");
+        return (
+          !this.weapons.find((w) => w.id === "knife") && this.weapons.length < 4
+        );
       },
     };
   }
@@ -440,7 +463,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         new Hatchet(this.scene).equip();
       },
       canAppear: () => {
-        return !this.weapons.find((w) => w.id === "hatchet");
+        return (
+          !this.weapons.find((w) => w.id === "hatchet") &&
+          this.weapons.length < 4
+        );
       },
     };
   }
