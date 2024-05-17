@@ -10,11 +10,12 @@ export class Shield extends Weapon {
   speed = 150;
   knockback = 45;
   pierce = 10;
+  size = 1;
 
   constructor(scene: Game) {
     super(scene);
 
-    this.possibleUpgrades = [this.damageUpgrade(), this.fireRateUpgrade()];
+    this.possibleUpgrades = [this.damageUpgrade(), this.fireRateUpgrade(), this.pierceUpgrade(), this.sizeUpgrade()];
   }
 
   fire() {
@@ -30,7 +31,7 @@ export class Shield extends Weapon {
       this.scene.player.y,
       "shield"
     );
-    shield.setScale(2);
+    shield.setScale(2 * this.size);
     shield.setData("damage", this.damage);
     shield.setData("fromWeapon", this);
     shield.setData("alreadyHit", []);
@@ -106,6 +107,18 @@ export class Shield extends Weapon {
       description: "Increase damage by 5",
       execute: () => {
         this.pierce += 2;
+        this.unequip();
+        this.equip();
+      },
+    };
+  }
+
+  sizeUpgrade() {
+    return {
+      name: "Shield: Size",
+      description: "Increase shield size by 10%",
+      execute: () => {
+        this.size *= 1.1;
         this.unequip();
         this.equip();
       },

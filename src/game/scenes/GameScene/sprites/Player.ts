@@ -3,6 +3,7 @@ import { createTrailPainter } from "../createTrailPainter";
 import { RenderDepth } from "../types";
 import { Axe } from "../weapons/Axe";
 import { Bow } from "../weapons/Bow";
+import { Flamethrower } from "../weapons/Flamethrower";
 import { Hatchet } from "../weapons/Hatchet";
 import { Knife } from "../weapons/Knife";
 import { Shield } from "../weapons/Shield";
@@ -52,6 +53,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.equipSickle(),
     this.equipHatchet(),
     this.equipShield(),
+    // this.equipFlamethrower(),
   ];
 
   weapons: Weapon[] = [];
@@ -484,6 +486,22 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       canAppear: () => {
         return (
           !this.weapons.find((w) => w.id === "shield") &&
+          this.weapons.length < 4
+        );
+      },
+    };
+  }
+
+  equipFlamethrower() {
+    return {
+      name: "Gain Flamethrower",
+      description: "",
+      execute: () => {
+        new Flamethrower(this.scene).equip();
+      },
+      canAppear: () => {
+        return (
+          !this.weapons.find((w) => w.id === "flamethrower") &&
           this.weapons.length < 4
         );
       },
