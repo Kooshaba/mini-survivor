@@ -2,6 +2,7 @@ import { Game } from "./GameScene";
 import { Enemy } from "./sprites/Enemy";
 import { FastBoy } from "./sprites/FastBoy";
 import { HugeBoy } from "./sprites/HugeBoy";
+import { MagmaBoss } from "./sprites/MagmaBoss";
 import { StrongBoy } from "./sprites/StrongBoy";
 
 export function createEnemyManager(scene: Game) {
@@ -25,9 +26,12 @@ export function createEnemyManager(scene: Game) {
     const randomPoint =
       points[Phaser.Math.RND.integerInRange(0, points.length - 1)];
 
-    const seed = Phaser.Math.RND.integerInRange(0, 100);
+    const seed = Phaser.Math.RND.realInRange(0, 100);
     let enemies: Enemy[] = [];
-    if (seed > 98) {
+
+    if (seed > 99.9) {
+      enemies.push(new MagmaBoss(scene, randomPoint.x, randomPoint.y));
+    } else if (seed > 98) {
       enemies = enemies.concat(fastBoySwarm());
     } else if (seed > 80) {
       enemies.push(new StrongBoy(scene, randomPoint.x, randomPoint.y));
