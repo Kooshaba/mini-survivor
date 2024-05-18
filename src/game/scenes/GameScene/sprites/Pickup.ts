@@ -2,16 +2,16 @@ import { Game } from "../GameScene";
 import { RenderDepth } from "../types";
 import { Player } from "./Player";
 
-export class ExperienceOrb extends Phaser.Physics.Arcade.Sprite {
+export class Pickup extends Phaser.Physics.Arcade.Sprite {
   declare body: Phaser.Physics.Arcade.Body;
   declare scene: Game;
 
   goTowardsPlayerSpeed: number = 0;
   canPickUp: boolean = false;
-  value: number = 1;
+  trigger: (player: Player) => void;
 
-  constructor(scene: Game, x: number, y: number, value?: number) {
-    super(scene, x, y, "experience-orb");
+  constructor(scene: Game, x: number, y: number, spriteKey: string, configureSprite: (sprite: Phaser.Physics.Arcade.Sprite) => void, trigger: (player: Player) => void ) {
+    super(scene, x, y, spriteKey);
     scene.add.existing(this);
     scene.physics.add.existing(this);
     this.body.setCircle(10);
@@ -19,18 +19,12 @@ export class ExperienceOrb extends Phaser.Physics.Arcade.Sprite {
     this.setScale(0.6);
     this.setDepth(RenderDepth.BACKGROUND);
 
-    this.scene.experienceOrbs.add(this);
+    configureSprite(this);
+    this.trigger = trigger;
+    this.scene.pickups.add(this);
 
     this.goTowardsPlayerSpeed = 0;
     this.canPickUp = false;
-    if (value) this.value = value;
-
-    if (this.value > 10) {
-      this.setTint(0xff0000);
-      this.setScale(0.8);
-    } else if (this.value > 5) {
-      this.setTint(0x00ff00);
-    }
 
     this.scene.time.delayedCall(500, () => {
       this.canPickUp = true;
@@ -72,5 +66,28 @@ export class ExperienceOrb extends Phaser.Physics.Arcade.Sprite {
       },
     });
   }
+}
+
+export function createExperienceOrb(scene: Game, x: number, y: number, xp: number) {
+  return new Pickup(scene, x, y, "experience-orb", (sprite) => {
+    sprite.setScale(0.6);
+
+    if (xp > 10) {
+      sprite.setTint(0xff0000);
+      sprite.setScale(0.8);
+    } else if (xp > 5) {
+      sprite.setTint(0x00ff00);
+    }
+  }, (player) => {
+    player.onReceiveXp(xp);
+  });
+}
+
+export function createHealthPotion(scene: Game, x: number, y: number, health: number) {
+  return new Pickup(scene, x, y, "heart", (sprite) => {
+    sprite.setScale(2);
+  }, (player) => {
+    player.heal(health);
+  });
 }
 

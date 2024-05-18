@@ -114,6 +114,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.scene.drawExperienceBar();
   }
 
+  heal(amount: number) {
+    this.health = Math.min(this.health + amount, this.totalHealth);
+    this.drawHealthBar();
+
+    this.drawXpCircleEffect(100, 0xffc0cb); // pink color
+  }
+
   takeDamage(damage: number) {
     if (this.immune) return;
 

@@ -2,7 +2,7 @@ import { GameObjects, Scene } from "phaser";
 
 import { EventBus } from "../../EventBus";
 import { Enemy } from "./sprites/Enemy";
-import { ExperienceOrb } from "./sprites/ExperienceOrb";
+import { Pickup } from "./sprites/Pickup";
 import { Player } from "./sprites/Player";
 import { RenderDepth } from "./types";
 import { Minimap } from "./Minimap";
@@ -20,7 +20,7 @@ export class Game extends Scene {
 
   projectiles: Phaser.GameObjects.Group;
   weapons: Phaser.GameObjects.Group;
-  experienceOrbs: Phaser.GameObjects.Group;
+  pickups: Phaser.GameObjects.Group;
 
   experienceBar: GameObjects.Graphics;
   levelText: GameObjects.BitmapText;
@@ -58,7 +58,7 @@ export class Game extends Scene {
 
     this.enemies = this.add.group();
     this.projectiles = this.add.group();
-    this.experienceOrbs = this.add.group();
+    this.pickups = this.add.group();
 
     this.player = new Player(this, 2000, 2000);
     this.player.queuedLevelUps.push({
@@ -144,30 +144,29 @@ export class Game extends Scene {
   }
 
   pickupExperience() {
-    this.experienceOrbs.getChildren().forEach((orb) => {
-      (orb as ExperienceOrb).checkPickup(this.player);
+    this.pickups.getChildren().forEach((orb) => {
+      (orb as Pickup).checkPickup(this.player);
     });
   }
 
-  moveExperienceOrbs() {
-    this.experienceOrbs.getChildren().forEach((_orb) => {
-      const orb = _orb as ExperienceOrb;
+  movePickUps() {
+    this.pickups.getChildren().forEach((_orb) => {
+      const pickup = _orb as Pickup;
       const rangeToPlayer = Phaser.Math.Distance.Between(
-        orb.x,
-        orb.y,
+        pickup.x,
+        pickup.y,
         this.player.x,
         this.player.y
       );
 
       if (rangeToPlayer < 20) {
-        this.player.onReceiveXp(orb.value);
-
-        orb.destroy();
+        pickup.trigger(this.player);
+        pickup.destroy();
         return;
       }
 
-      if (orb.goTowardsPlayerSpeed) {
-        this.physics.moveToObject(orb, this.player, orb.goTowardsPlayerSpeed);
+      if (pickup.goTowardsPlayerSpeed) {
+        this.physics.moveToObject(pickup, this.player, pickup.goTowardsPlayerSpeed);
       }
     });
   }
@@ -263,7 +262,7 @@ export class Game extends Scene {
     this.enemyManager.update(time, delta);
 
     this.pickupExperience();
-    this.moveExperienceOrbs();
+    this.movePickUps();
 
     this.roundTime += delta;
     this.drawTimerText();

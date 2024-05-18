@@ -1,7 +1,7 @@
 import { Game } from "../GameScene";
 import { RenderDepth } from "../types";
 import { Weapon } from "../weapons/Weapon";
-import { ExperienceOrb } from "./ExperienceOrb";
+import { createExperienceOrb, createHealthPotion } from "./Pickup";
 
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
   declare body: Phaser.Physics.Arcade.Body;
@@ -143,8 +143,18 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.on("animationcomplete", () => this.destroy());
 
     const dropSeed = Phaser.Math.RND.realInRange(0, 1);
-    if (dropSeed <= this.xpDropChance) {
-      const orb = new ExperienceOrb(this.scene, this.x, this.y, this.xp);
+    if(dropSeed >= 0.99) {
+      const healthPotion = createHealthPotion(this.scene, this.x, this.y, 10);
+      healthPotion.setAlpha(0);
+      healthPotion.setScale(0);
+      this.scene.tweens.add({
+        targets: healthPotion,
+        alpha: 1,
+        scale: 2,
+        duration: 150,
+      });
+    } else if (dropSeed <= this.xpDropChance) {
+      const orb = createExperienceOrb(this.scene, this.x, this.y, this.xp);
       orb.setAlpha(0);
       orb.setScale(0);
       this.scene.tweens.add({
