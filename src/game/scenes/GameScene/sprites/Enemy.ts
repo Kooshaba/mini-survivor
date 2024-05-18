@@ -1,7 +1,12 @@
 import { Game } from "../GameScene";
 import { RenderDepth } from "../types";
 import { Weapon } from "../weapons/Weapon";
-import { createExperienceOrb, createHealthPotion } from "./Pickup";
+import {
+  Pickup,
+  createExperienceOrb,
+  createHealthPotion,
+  createMagnet,
+} from "./Pickup";
 
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
   declare body: Phaser.Physics.Arcade.Body;
@@ -143,27 +148,28 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.on("animationcomplete", () => this.destroy());
 
     const dropSeed = Phaser.Math.RND.realInRange(0, 1);
-    if(dropSeed >= 0.99) {
-      const healthPotion = createHealthPotion(this.scene, this.x, this.y, 10);
-      healthPotion.setAlpha(0);
-      healthPotion.setScale(0);
-      this.scene.tweens.add({
-        targets: healthPotion,
-        alpha: 1,
-        scale: 2,
-        duration: 150,
-      });
+    let pickup: Pickup | undefined = undefined;
+
+    if (dropSeed >= 0.99) {
+      pickup = createHealthPotion(this.scene, this.x, this.y, 10);
+    } else if (dropSeed >= 0.988) {
+      pickup = createMagnet(this.scene, this.x, this.y);
     } else if (dropSeed <= this.xpDropChance) {
-      const orb = createExperienceOrb(this.scene, this.x, this.y, this.xp);
-      orb.setAlpha(0);
-      orb.setScale(0);
+      pickup = createExperienceOrb(this.scene, this.x, this.y, this.xp);
+    }
+
+    if (pickup) {
+      const originalScale = pickup.scale;
+      pickup.setAlpha(0);
+      pickup.setScale(0);
       this.scene.tweens.add({
-        targets: orb,
+        targets: pickup,
         alpha: 1,
-        scale: 0.6,
+        scale: originalScale,
         duration: 150,
       });
     }
+
     this.scene.player.incrementKillCount();
 
     this.healthBar?.destroy();

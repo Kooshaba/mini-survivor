@@ -10,7 +10,14 @@ export class Pickup extends Phaser.Physics.Arcade.Sprite {
   canPickUp: boolean = false;
   trigger: (player: Player) => void;
 
-  constructor(scene: Game, x: number, y: number, spriteKey: string, configureSprite: (sprite: Phaser.Physics.Arcade.Sprite) => void, trigger: (player: Player) => void ) {
+  constructor(
+    scene: Game,
+    x: number,
+    y: number,
+    spriteKey: string,
+    configureSprite: (sprite: Phaser.Physics.Arcade.Sprite) => void,
+    trigger: (player: Player) => void
+  ) {
     super(scene, x, y, spriteKey);
     scene.add.existing(this);
     scene.physics.add.existing(this);
@@ -44,7 +51,7 @@ export class Pickup extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  onPickup(player: Phaser.Physics.Arcade.Sprite) {
+  onPickup(player: Phaser.Physics.Arcade.Sprite, speedOverride?: number) {
     this.canPickUp = false;
 
     const playerPosition = player.getCenter();
@@ -62,32 +69,85 @@ export class Pickup extends Phaser.Physics.Arcade.Sprite {
       duration: 150,
       ease: "Sine.easeInOut",
       onComplete: () => {
-        this.goTowardsPlayerSpeed = Phaser.Math.RND.realInRange(320, 380);
+        this.goTowardsPlayerSpeed =
+          speedOverride ?? Phaser.Math.RND.realInRange(320, 380);
       },
     });
   }
 }
 
-export function createExperienceOrb(scene: Game, x: number, y: number, xp: number) {
-  return new Pickup(scene, x, y, "experience-orb", (sprite) => {
-    sprite.setScale(0.6);
+export function createExperienceOrb(
+  scene: Game,
+  x: number,
+  y: number,
+  xp: number
+) {
+  return new Pickup(
+    scene,
+    x,
+    y,
+    "experience-orb",
+    (sprite) => {
+      sprite.setScale(0.6);
 
-    if (xp > 10) {
-      sprite.setTint(0xff0000);
-      sprite.setScale(0.8);
-    } else if (xp > 5) {
-      sprite.setTint(0x00ff00);
+      if (xp > 10) {
+        sprite.setTint(0xff0000);
+        sprite.setScale(0.8);
+      } else if (xp > 5) {
+        sprite.setTint(0x00ff00);
+      }
+    },
+    (player) => {
+      player.onReceiveXp(xp);
     }
-  }, (player) => {
-    player.onReceiveXp(xp);
-  });
+  );
 }
 
-export function createHealthPotion(scene: Game, x: number, y: number, health: number) {
-  return new Pickup(scene, x, y, "heart", (sprite) => {
-    sprite.setScale(2);
-  }, (player) => {
-    player.heal(health);
-  });
+export function createHealthPotion(
+  scene: Game,
+  x: number,
+  y: number,
+  health: number
+) {
+  return new Pickup(
+    scene,
+    x,
+    y,
+    "heart",
+    (sprite) => {
+      sprite.setScale(2);
+    },
+    (player) => {
+      player.heal(health);
+    }
+  );
+}
+
+let magnetExists = false;
+export function createMagnet(scene: Game, x: number, y: number) {
+  if (magnetExists) return;
+  magnetExists = true;
+  return new Pickup(
+    scene,
+    x,
+    y,
+    "magnet",
+    (sprite) => {
+      sprite.setScale(2);
+    },
+    (player) => {
+      player.scene.pickups.getChildren().forEach((_p) => {
+        const p = _p as Pickup;
+        const distanceToPlayer = Phaser.Math.Distance.Between(
+          player.x,
+          player.y,
+          p.x,
+          p.y
+        );
+        p.onPickup(player, 200 + distanceToPlayer);
+        magnetExists = false;
+      });
+    }
+  );
 }
 

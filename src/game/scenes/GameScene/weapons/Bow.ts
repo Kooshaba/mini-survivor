@@ -49,7 +49,6 @@ export class Bow extends Weapon {
 
     arrow.setScale(1.4);
     arrow.body.setCircle(8);
-    arrow.body.setOffset(0, 6);
     arrow.setData("hitEnemies", []);
     arrow.setData("fromWeapon", this);
 
