@@ -144,7 +144,10 @@ export function createMagnet(scene: Game, x: number, y: number) {
           p.x,
           p.y
         );
-        p.onPickup(player, 200 + distanceToPlayer);
+        p.onPickup(
+          player,
+          100 + distanceToPlayer + Phaser.Math.RND.integerInRange(200, 400)
+        );
         magnetExists = false;
       });
     }
