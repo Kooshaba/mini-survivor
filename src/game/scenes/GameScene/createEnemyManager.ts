@@ -6,6 +6,13 @@ import { MagmaBoss } from "./sprites/MagmaBoss";
 import { StrongBoy } from "./sprites/StrongBoy";
 
 export function createEnemyManager(scene: Game) {
+  let stage = 1;
+  let stage2Spawned = false;
+  let stage3Spawned = false;
+
+  scene.time.delayedCall(60 * 1000, () => (stage = 2));
+  scene.time.delayedCall(60 * 5 * 1000, () => (stage = 3));
+
   const getSpawnCircle = () => {
     const spawnCircle = new Phaser.Geom.Circle(
       scene.player.x,
@@ -29,16 +36,57 @@ export function createEnemyManager(scene: Game) {
     const seed = Phaser.Math.RND.realInRange(0, 100);
     let enemies: Enemy[] = [];
 
-    if (seed > 99.9) {
-      enemies.push(new MagmaBoss(scene, randomPoint.x, randomPoint.y));
-    } else if (seed > 98) {
-      enemies = enemies.concat(fastBoySwarm());
-    } else if (seed > 80) {
-      enemies.push(new StrongBoy(scene, randomPoint.x, randomPoint.y));
-    } else if (seed > 77) {
-      enemies.push(new HugeBoy(scene, randomPoint.x, randomPoint.y));
-    } else {
-      const count = Phaser.Math.RND.integerInRange(1, 10);
+    const spawnBasicEnemies = () => {
+      const points = spawnCircle.getPoints(40);
+      const randomPoints = points.sort(() => Math.random() - 0.5);
+      const spawnPoints = randomPoints.slice(0, 10);
+
+      spawnPoints.forEach((point) => {
+        enemies.push(new Enemy(scene, point.x, point.y));
+      });
+    };
+
+    if (stage === 1) {
+      spawnBasicEnemies();
+    } else if (stage === 2) {
+      if (!stage2Spawned) {
+        enemies = enemies.concat(fastBoySwarm());
+        stage2Spawned = true;
+      }
+
+      spawnBasicEnemies();
+
+      if (seed > 98) {
+        enemies = enemies.concat(fastBoySwarm());
+      } else if (seed > 80) {
+        enemies.push(new StrongBoy(scene, randomPoint.x, randomPoint.y));
+      } else if (seed > 77) {
+        enemies.push(new HugeBoy(scene, randomPoint.x, randomPoint.y));
+      } else {
+        const count = Phaser.Math.RND.integerInRange(1, 10);
+        for (let i = 0; i < count; i++) {
+          const positionOffset = new Phaser.Math.Vector2(
+            Phaser.Math.RND.integerInRange(-10, 10),
+            Phaser.Math.RND.integerInRange(-10, 10)
+          );
+          enemies.push(
+            new Enemy(
+              scene,
+              randomPoint.x + positionOffset.x,
+              randomPoint.y + positionOffset.y
+            )
+          );
+        }
+      }
+    } else if (stage === 3) {
+      if (!stage3Spawned) {
+        enemies.push(new MagmaBoss(scene, randomPoint.x, randomPoint.y));
+        stage3Spawned = true;
+      }
+
+      spawnBasicEnemies();
+
+      const count = Phaser.Math.RND.integerInRange(20, 30);
       for (let i = 0; i < count; i++) {
         const positionOffset = new Phaser.Math.Vector2(
           Phaser.Math.RND.integerInRange(-10, 10),
@@ -53,7 +101,6 @@ export function createEnemyManager(scene: Game) {
         );
       }
     }
-
     enemies.forEach((e) => scene.enemies.add(e));
     queueEnemySpawn();
   };
