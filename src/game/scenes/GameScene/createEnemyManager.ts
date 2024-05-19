@@ -78,6 +78,19 @@ export function createEnemyManager(scene: Game) {
     );
   };
 
+  const registerAdminSpawning = () => {
+    if (!scene.input.keyboard) return;
+
+    scene.input.keyboard.on("keydown", (k: KeyboardEvent) => {
+      if (k.key !== "f") return;
+      const p = scene.input.activePointer;
+      if (!p) return;
+
+      scene.enemies.add(new FastBoy(scene, p.worldX, p.worldY));
+    });
+  };
+  registerAdminSpawning();
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const update = (_time: number, _delta: number) => {};
 
