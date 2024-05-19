@@ -10,7 +10,7 @@ export function createEnemyManager(scene: Game) {
     const spawnCircle = new Phaser.Geom.Circle(
       scene.player.x,
       scene.player.y,
-      800
+      Math.max(800, scene.cameras.main.worldView.width)
     );
     return spawnCircle;
   };
