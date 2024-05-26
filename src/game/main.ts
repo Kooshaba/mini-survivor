@@ -13,8 +13,11 @@ const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
 const config: Phaser.Types.Core.GameConfig = {
   type: AUTO,
-  width: window.innerWidth,
-  height: isMobile ? window.innerHeight - 120 : window.innerHeight,
+  width: Math.min(window.innerWidth, 1200),
+  height: Math.min(
+    isMobile ? window.innerHeight - 120 : window.innerHeight,
+    800
+  ),
   parent: "game-container",
   backgroundColor: "#028af8",
   scene: [Boot, Preloader, MainMenu, GameScene, UpgradeScene, SummaryScene],

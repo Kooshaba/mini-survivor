@@ -23,7 +23,23 @@ export function createEnemyManager(scene: Game) {
   };
 
   const spawnEnemy = () => {
-    if (scene.enemies.countActive() > 350) {
+    scene.enemies.getChildren().forEach((_e) => {
+      const e = _e as Enemy;
+      if (e.creature !== "devil") return;
+
+      const distanceToPlayer = Phaser.Math.Distance.Between(
+        e.x,
+        e.y,
+        scene.player.x,
+        scene.player.y
+      );
+
+      if (distanceToPlayer > scene.cameras.main.worldView.width + 300) {
+        e.destroy();
+      }
+    });
+
+    if (scene.enemies.countActive() > 450) {
       queueEnemySpawn();
       return;
     }
@@ -36,10 +52,10 @@ export function createEnemyManager(scene: Game) {
     const seed = Phaser.Math.RND.realInRange(0, 100);
     let enemies: Enemy[] = [];
 
-    const spawnBasicEnemies = () => {
+    const spawnBasicEnemies = (n = 10) => {
       const points = spawnCircle.getPoints(40);
       const randomPoints = points.sort(() => Math.random() - 0.5);
-      const spawnPoints = randomPoints.slice(0, 10);
+      const spawnPoints = randomPoints.slice(0, n);
 
       spawnPoints.forEach((point) => {
         enemies.push(new Enemy(scene, point.x, point.y));
@@ -47,7 +63,7 @@ export function createEnemyManager(scene: Game) {
     };
 
     if (stage === 1) {
-      spawnBasicEnemies();
+      spawnBasicEnemies(5);
     } else if (stage === 2) {
       if (!stage2Spawned) {
         enemies = enemies.concat(fastBoySwarm());
@@ -84,22 +100,7 @@ export function createEnemyManager(scene: Game) {
         stage3Spawned = true;
       }
 
-      spawnBasicEnemies();
-
-      const count = Phaser.Math.RND.integerInRange(20, 30);
-      for (let i = 0; i < count; i++) {
-        const positionOffset = new Phaser.Math.Vector2(
-          Phaser.Math.RND.integerInRange(-10, 10),
-          Phaser.Math.RND.integerInRange(-10, 10)
-        );
-        enemies.push(
-          new Enemy(
-            scene,
-            randomPoint.x + positionOffset.x,
-            randomPoint.y + positionOffset.y
-          )
-        );
-      }
+      spawnBasicEnemies(30);
     }
     enemies.forEach((e) => scene.enemies.add(e));
     queueEnemySpawn();
